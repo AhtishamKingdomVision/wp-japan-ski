@@ -1,0 +1,161 @@
+#mdd-bar {
+	position: relative;
+	clear: both;
+	height: 30px;
+	background-color: white;
+	background-color: rgba(255,255,255,0.9);
+	max-width: 800px;
+	margin: 5px auto;
+	-webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
+	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
+}
+#mdd-bar-percent {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 300px;
+	margin-left: -150px;
+	height: 30px;
+	margin-top: -10px;
+	text-align: center;
+	font-weight: bold;
+	text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+}
+#mdd-meter {
+	height: 30px;
+	background-color: #0073aa;	/* fresh */
+	width: 0%;
+	display: inline-block;
+	position: relative;
+}
+.admin-color-light #mdd-meter {
+	background-color: #888;
+}
+.admin-color-blue #mdd-meter {
+	background-color: #096484;
+}
+.admin-color-coffee #mdd-meter {
+	background-color: #c7a589;
+}
+.admin-color-ectoplasm #mdd-meter {
+	background-color: #a3b745;
+}
+.admin-color-midnight #mdd-meter {
+	background-color: #e14d43;
+}
+.admin-color-ocean #mdd-meter {
+	background-color: #9ebaa0;
+}
+.admin-color-sunrise #mdd-meter {
+	background-color: #dd823b;
+}
+#mdd-meter:before {
+	background: -moz-linear-gradient(top,  rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%); /* FF3.6+ */
+	background: -webkit-linear-gradient(top,  rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 60%); /* W3C */
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+#mdd-manage {
+	display: none;
+}
+.column-mdd_size {
+	width: 6em;
+}
+
+.media_page_media-deduper .nav-tab-wrapper {
+	/* Add some extra space below tabs so things don't feel so cramped. */
+	margin-bottom: 20px;
+}
+.media_page_media-deduper .nav-tab-wrapper::after {
+	/* Don't clear .mdd-column-2, it looks bad -- only clear tabs. */
+	clear: left;
+}
+.mdd-column-2 {
+	margin-bottom: 20px;
+}
+@media screen and (min-width: 426px) {
+	.mdd-column-2 {
+		float: right;
+		width: 280px;
+		margin-left: 20px;
+	}
+}
+
+.mdd-box {
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	position: relative;
+	padding: 15px;
+}
+
+.mdd-box > h2:first-child {
+	margin-top: 0;
+}
+
+.mdd-box > p:last-child {
+	margin-bottom: 0;
+}
+
+/* Container for 'hide duplicates that share files' dropdown. Extends .wp-filter. */
+.mdd-filter {
+	display: block; /* Default: inline-block. */
+	width: auto; /* Default: 100%. */
+	overflow: hidden; /* Don't overlap .mdd-box. */
+}
+
+/* 'What's this?' link in .mdd-filter. */
+#shared-help {
+	display: inline-block; /* Don't wrap between 'what's' and 'this' on small screens. */
+	margin-bottom: 12px; /* If wrapping to a second line, don't butt up against container edge. */
+}
+
+/* Admin notices. */
+.mdd-notice.notice-info {
+	border-left-color: #f36e51 !important; /* CSHP Salmon */
+}
+
+/* Cornershop-branded buttons. Used in upsell admin notice and in .mdd-box. */
+.wp-core-ui .button-primary.button-cshp {
+  background: #f36e51;
+  border-color: #f04621 #e83710 #e83710;
+  color: white;
+  box-shadow: 0 1px 0 #e83710;
+  text-shadow: 0 -1px 1px #e83710, 1px 0 1px #e83710, 0 1px 1px #e83710, -1px 0 1px #e83710;
+}
+.wp-core-ui .button-primary.button-cshp :hover,
+.wp-core-ui .button-primary.button-cshp :focus {
+  background: #f47a5f;
+  border-color: #e83710;
+  color: white;
+  box-shadow: 0 1px 0 #e83710;
+}
+.wp-core-ui .button-primary.button-cshp:focus {
+  box-shadow: inset 0 1px 0 #f04621, 0 0 2px 1px #33b3db;
+}
+.wp-core-ui .button-primary.button-cshp:active {
+  background: #f04621;
+  border-color: #e83710;
+  box-shadow: inset 0 2px 0 #e83710;
+}
+.wp-core-ui .button-primary.button-cshp[disabled],
+.wp-core-ui .button-primary.button-cshp:disabled,
+.wp-core-ui .button-primary.button-cshp.button-primary-disabled,
+.wp-core-ui .button-primary.button-cshp.disabled {
+  color: #d1c9c7 !important;
+  background: #f04e2b !important;
+  border-color: #e83710 !important;
+  text-shadow: none !important;
+}
+.wp-core-ui .button-primary.button-cshp.button-hero {
+  box-shadow: 0 2px 0 #e83710 !important;
+}
+.wp-core-ui .button-primary.button-cshp.button-hero:active {
+  box-shadow: inset 0 3px 0 #e83710 !important;
+}

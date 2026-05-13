@@ -1,0 +1,445 @@
+<?php
+/**
+ * Template Name: Booking Confirmation
+ */
+get_header();
+
+$cart_data = isset($_COOKIE['cart_data']) ? json_decode(stripslashes($_COOKIE['cart_data']), true) : null;
+$long_desc_data = isset($_COOKIE['long_desc_data']) ? json_decode(stripslashes($_COOKIE['long_desc_data']), true) : null;
+?>
+
+<section class="full-section booking_page">
+    <div class="container booking_page">
+
+        <div class="rb-booking-wrapper">
+
+            <!-- LEFT COLUMN -->
+            <div class="rb-left-column">
+
+                <div class="booking_dates">
+                    <div class="check-in">
+                        <h4>CHECK IN</h4>
+                        <p></p>
+                    </div>
+                    <div class="check-out">
+                        <h4>CHECK OUT</h4>
+                        <p></p>
+                    </div>
+                </div>
+
+                <!-- ROOM STRUCTURE TEMPLATE -->
+                <template id="rb-room-card-template">
+                    <div class="rb-room-card room-card" data-room-type-id="" data-idx="">
+
+                        <div class="rb-room-top">
+
+                            <div class="rb-room-img">
+                                <img src="" alt="">
+                            </div>
+
+                            <div class="rb-room-meta">
+
+                                <!-- HOTEL NAME -->
+                                <div class="rb-hotel-name"></div>
+
+                                <!-- ROOM TITLE -->
+                                <div class="tit_date">
+                                    <h3 class="rb-room-title"></h3>
+                                    <button type="button" class="rb-remove"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+
+                                <!-- ICONS -->
+                                <div class="rb-icons"></div>
+
+                                <!-- DESCRIPTION -->
+                                <div class="rb-room-desc"></div>
+
+                                <!-- BEDDING OPTIONS -->
+                                <div class="rb-bedding-wrap"></div>
+
+                            </div>
+                        </div>
+
+                        <!-- RATEPLAN -->
+                        <div class="rb-rateplans">
+                            <div class="rb-rateplan-box">
+
+                                <div class="rb-rateplan-left">
+                                    <div class="rb-rateplan-title"></div>
+
+                                    <a href="javascript:void(0)" class="rb-policy-link">
+                                        Show payment & cancellation policies
+                                    </a>
+                                </div>
+
+                                <div class="rb-rateplan-right">
+                                    <div class="rb-final-price" data-price=""></div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </template>
+
+                <!-- ROOMS CONTAINER -->
+                <div id="booking-container"></div>
+
+                <!-- FORM -->
+                <div class="booking-confirmation-form">
+                    <h3>Enter your details</h3>
+                    <?php echo do_shortcode('[gravityform id="3" title="false" description="false" ajax="true"]'); ?>
+                </div>
+                <div id="flywire_box"></div>
+
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="rb-right-column">
+
+                <div class="rb-summary-box">
+                    <h3>Booking Summary</h3>
+
+                    <div class="rb-summary-line">
+                        <span>Bookings</span>
+                        <span id="summary-bookings">1</span>
+                    </div>
+
+                    <div class="rb-summary-line">
+                        <span>Guests</span>
+                        <span id="summary-guests">–</span>
+                    </div>
+
+                    <div class="rb-summary-line">
+                        <span>Check in</span>
+                        <span id="summary-checkin">–</span>
+                    </div>
+
+                    <div class="rb-summary-line">
+                        <span>Check out</span>
+                        <span id="summary-checkout">–</span>
+                    </div>
+
+                    <div class="rb-summary-line">
+                        <span>Duration</span>
+                        <span id="summary-duration">–</span>
+                    </div>
+
+                    <div class="rb-summary-total">
+                        <span>Total</span>
+                        <span class="room-total-price" data-price="0">¥0</span>
+                    </div>
+
+                    <div class="rb-payment-schedule">
+
+                        <h4>Payment Schedule</h4>
+
+                        <!-- Full payment required -->
+                        <div id="full-payment-required" style="display:none;">
+                            <div class="rb-payment-line">
+                                <span>Full payment is required</span>
+                                <span id="full-payment-amount">¥0</span>
+                            </div>
+                        </div>
+
+                        <!-- Deposit / balance -->
+                        <div id="deposit-schedule">
+                            <div class="rb-payment-line">
+                                <span>Deposit due now</span>
+                                <span id="deposit-amount">¥0</span>
+                            </div>
+
+                            <div class="rb-payment-line">
+                                <span>
+                                    Remaining balance
+                                    <small id="balance-due-date"></small>
+                                </span>
+                                <span id="balance-amount">¥0</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button class="rb-pay-btn">
+                        PROCEED TO PAYMENT
+                    </button>
+                </div>
+
+                <div class="rb-payment-notice">
+                    <div class="rb-notice-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                    <div class="rb-notice-content">
+                        <p>
+                            Full payment is required by 
+                            <strong id="full-payment-deadline">–</strong>
+                            to secure your booking.
+                        </p>
+
+                        <p class="rb-notice-subtext">
+                            Please note that we do not accept third-party credit card payments.
+                            The credit card used for payment must belong to one of the staying guests
+                            and must be presented at check-in. Additionally, the cardholder’s
+                            identity will be verified upon arrival.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<?php get_footer(); ?>
+
+<script>
+function kv_booking_cart_get() {
+    return JSON.parse(localStorage.getItem('rb_cart') || '{"items":[]}');
+}
+
+function kv_booking_cart_set(cart) {
+    localStorage.setItem('rb_cart', JSON.stringify(cart));
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('ja-JP', {
+        style: 'currency',
+        currency: 'JPY',
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+
+function renderBookingRooms(cart) {
+    const container = document.getElementById('booking-container');
+    if (!cart?.items?.length) {
+        container.innerHTML = '<p>No booking data found. Please select a room first.</p>';
+        return;
+    }
+
+    const template = document.getElementById('rb-room-card-template');
+    const chk_in = localStorage.getItem('niseko_checkin');
+    const chk_out = localStorage.getItem('niseko_checkout');
+
+    const booking_dates = document.querySelector('.booking_dates');
+    booking_dates.querySelector('.check-in p').textContent = chk_in;
+    booking_dates.querySelector('.check-out p').textContent = chk_out;
+
+    document.getElementById('summary-checkin').textContent = chk_in;
+    document.getElementById('summary-checkout').textContent = chk_out;
+
+    const cards = cart.items.map((item, idx) => {
+
+        const card = template.content.firstElementChild.cloneNode(true);
+        card.dataset.roomTypeId = item.room_type_id;
+        card.dataset.idx = idx;
+
+        // Hotel name
+        card.querySelector('.rb-hotel-name').textContent = item.property_name || '';
+
+        document.getElementById('summary-guests').textContent = item.guests.label || '';
+        document.getElementById('summary-duration').textContent = Math.floor((item.duration) / (1000 * 60 * 60 * 24)) || '';
+
+        // Room title
+        card.querySelector('.rb-room-title').textContent = item.room_name;
+
+        // Rateplan
+        card.querySelector('.rb-rateplan-title').textContent = item.rateplan_name;
+
+        const ratePlanBox = card.querySelector('.rb-rateplan-box');
+        ratePlanBox.dataset.rateplanId = item.rateplan_id;
+        ratePlanBox.dataset.rateplanName = item.rateplan_name;
+        ratePlanBox.dataset.price = item.price;
+
+        card.querySelector('.rb-final-price').textContent =
+            `¥${item.price.toLocaleString()}`;
+        card.querySelector('.rb-final-price').dataset.price = item.price;
+
+        // Fetch room details
+        jQuery.ajax({
+            url: kv_object.ajaxurl,
+            method: "POST",
+            data: {
+                action: 'fetch_room_details',
+                room_tid: item.room_type_id,
+            },
+            success: function (response) {
+                card.querySelector('.rb-room-img img').src = response.data.room_img;
+                card.querySelector('.rb-room-img img').alt = item.room_name;
+                card.querySelector('.rb-room-desc').textContent = response.data.room_desc;
+                card.querySelector('.rb-icons').innerHTML = response.data.room_fields;
+
+                // Bedding dropdowns
+                const beddingWrap = card.querySelector('.rb-bedding-wrap');
+                const bedroomCount = item.bedrooms || 1;
+
+                for (let i = 1; i <= bedroomCount; i++) {
+                    const block = document.createElement('div');
+                    block.className = 'rb-bedding-block';
+                    block.innerHTML = `
+                        <label>Bedroom ${i} Bedding</label>
+                        <select>
+                            <option>Please Select</option>
+                            <option>1 King</option>
+                            <option>2 Single</option>
+                        </select>
+                    `;
+                    beddingWrap.appendChild(block);
+                }
+            }
+        });
+
+        return card;
+    });
+
+    container.replaceChildren(...cards);
+    document.getElementById('summary-bookings').textContent = cart.items.length;
+}
+
+function calculateRoomTotal() {
+    let total = 0;
+    document.querySelectorAll('.rb-final-price').forEach(priceEl => {
+        const price = parseFloat(priceEl.dataset.price) || 0;
+        total += price;
+    });
+
+    const totalEl = document.querySelector('.room-total-price');
+    if (!totalEl) return;
+
+    totalEl.dataset.price = total;
+    totalEl.textContent = formatCurrency(total);
+}
+
+function updatePaymentSchedule(cart) {
+    const totalEl = document.querySelector('.room-total-price');
+    if (!totalEl) return;
+
+    const total = Number(totalEl.dataset.price || 0);
+    if (!total || total <= 0) return;
+
+    // Optional: read a "full payment required" flag from cart (future-proof)
+    const fullRequiredFlag = !!cart?.items?.[0]?.payment?.full_required;
+
+    // Deposit rule (placeholder until real RoomBoss policy is wired)
+    // Change 0.20 to whatever your business rule is
+    let depositPct = 0.25;
+
+    // If full payment required by policy/flag, set deposit to 100%
+    if (fullRequiredFlag) depositPct = 1;
+
+    const deposit = Math.round(total * depositPct);
+    const balance = Math.max(0, total - deposit);
+
+    const fullWrap = document.getElementById('full-payment-required');
+    const fullAmountEl = document.getElementById('full-payment-amount');
+
+    const depositWrap = document.getElementById('deposit-schedule');
+    const depositEl = document.getElementById('deposit-amount');
+    const balanceEl = document.getElementById('balance-amount');
+    const dueDateEl = document.getElementById('balance-due-date');
+
+    // FULL payment case
+    const isFullPayment = deposit >= total || balance === 0;
+
+    if (isFullPayment) {
+        if (fullWrap) fullWrap.style.display = '';
+        if (depositWrap) depositWrap.style.display = 'none';
+
+        if (fullAmountEl) fullAmountEl.textContent = formatCurrency(total);
+
+        // Clear other fields just in case
+        if (depositEl){
+            depositEl.textContent = formatCurrency(total);
+            depositEl.dataset.price = total;
+        }
+
+        if (balanceEl){
+          balanceEl.textContent = formatCurrency(0);
+          balanceEl.dataset.price = 0;
+        }
+
+        if (dueDateEl){
+            dueDateEl.textContent = '';
+        }
+        return;
+    }
+
+    // DEPOSIT schedule case
+    if (fullWrap) fullWrap.style.display = 'none';
+    if (depositWrap) depositWrap.style.display = '';
+
+    if (depositEl) {
+        depositEl.textContent = formatCurrency(deposit);
+        depositEl.dataset.price = deposit;
+    }
+
+    if (balanceEl) {
+        balanceEl.textContent = formatCurrency(balance);
+        balanceEl.dataset.price = balance;
+    }
+
+    const checkIn = localStorage.getItem('niseko_checkin'); // "10/04/2026"
+    // Due date logic (example: 30 days before check-in)
+    if (dueDateEl && checkIn.length > 0) {
+        if (checkIn) {
+            const parts = checkIn.split('/');
+            const date = new Date(parts[2], parts[1] - 1, parts[0]);
+            date.setDate(date.getDate() - 30);
+            console.log( 'date' );
+            console.log( date );
+            console.log( date.toLocaleDateString('en-GB') );
+            dueDateEl.textContent = `(Due by ${date.toLocaleDateString('en-GB')})`;
+        } else {
+            dueDateEl.textContent = '';
+        }
+    }
+}
+function setFullPaymentDeadline(cart) {
+    const el = document.getElementById('full-payment-deadline');
+    if (!el) return;
+
+    const checkIn = localStorage.getItem('niseko_checkin'); // "10/04/2026"
+    if (!checkIn) return;
+
+    const parts = checkIn.split('/');
+    const date = new Date(parts[2], parts[1] - 1, parts[0]);
+
+    // example: 30 days before check-in
+    date.setDate(date.getDate() - 30);
+
+    el.textContent = date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+}
+
+jQuery(document)
+    .off('click.rbRemove')
+    .on('click.rbRemove', '.rb-remove', function () {
+        const $item = jQuery(this).closest('.rb-summary-card, .rb-room-card');
+        const idx = Number($item.data('idx'));
+
+        let cart = kv_booking_cart_get();
+        if (!cart.items || typeof cart.items[idx] === 'undefined') {
+            return;
+        }
+
+        cart.items.splice(idx, 1);
+        kv_booking_cart_set(cart);
+        renderBookingRooms(cart);
+        calculateRoomTotal();
+        updatePaymentSchedule(cart);
+        setFullPaymentDeadline(cart);
+    });
+
+jQuery(document).ready(function ($) {
+    if ($('.booking_page').length > 0) {
+        const cart_data = kv_booking_cart_get();
+        renderBookingRooms(cart_data);
+        calculateRoomTotal();
+        updatePaymentSchedule(cart_data);
+        setFullPaymentDeadline(cart_data);
+    }
+});
+</script>

@@ -1,0 +1,2099 @@
+<?php
+define('KV_ROOMBOSS_BASE', 'https://api.roomboss.com/extws');
+define('KV_BOOKING_SYSTEM_BASE', 'https://trip.japanskiexperience.com');
+define('KV_ROOMBOSS_USER', 'JSE');
+define('KV_ROOMBOSS_PASS', 'B1DcyHegA5TRRHjF');
+// define('KV_BS_authToken', '7762|ri1vWuoIOAqqBj0v0omJRbXA3Pmn3mw9hM7VMSAp13f9ca5a');
+define('KV_BS_authToken', '7762|ri1vWuoIOAqqBj0v0omJRbXA3Pmn3mw9hM7VMSAp13f9ca5a');
+
+function get_accommodation_base_areas( $resort = null ) {
+    if ( empty( $resort ) ) {
+        return [];
+    }
+
+    // Attempt to find the parent term by slug.
+    // Slugs may be 'niseko' or 'niseko-accommodation'.
+    $parent_term = get_term_by( 'slug', $resort, 'accommodation-cat' );
+
+    if ( ! $parent_term ) {
+        $parent_term = get_term_by( 'slug', $resort . '-accommodation', 'accommodation-cat' );
+    }
+
+    if ( ! $parent_term || is_wp_error( $parent_term ) ) {
+        return [];
+    }
+
+    // Fetch all child categories for the resort.
+    $child_terms = get_terms( [
+        'taxonomy'   => 'accommodation-cat',
+        'parent'     => $parent_term->term_id,
+        'hide_empty' => false,
+    ] );
+
+    if ( is_wp_error( $child_terms ) || empty( $child_terms ) ) {
+        return [];
+    }
+
+    $areas = [];
+    foreach ( $child_terms as $term ) {
+        $areas[$term->slug] = $term->name;
+    }
+
+    return $areas;
+}
+
+add_action('wp_ajax_kv_get_resort_areas', 'kv_get_resort_areas_ajax');
+add_action('wp_ajax_nopriv_kv_get_resort_areas', 'kv_get_resort_areas_ajax');
+
+/**
+ * AJAX handler to retrieve base areas for a specific resort.
+ * Triggered when the resort selection changes in the filter panel.
+ */
+function kv_get_resort_areas_ajax() {
+    $resort = isset($_POST['resort']) ? sanitize_text_field($_POST['resort']) : '';
+
+    if (empty($resort)) {
+        wp_send_json_error(['message' => 'Resort parameter is required']);
+    }
+
+    // get_accommodation_base_areas helper is defined in accommodation-config.php
+    $areas = get_accommodation_base_areas($resort);
+
+    wp_send_json_success($areas);
+}
+
+add_action('wp_ajax_niseko_search', 'niseko_search');
+add_action('wp_ajax_nopriv_niseko_search', 'niseko_search');
+
+/**
+ * Main search dispatcher - routes to booking system or local search
+ * Validates input and delegates to appropriate search function
+ * 
+ * @return void Sends JSON response
+ */
+function niseko_search() {
+    try {
+        // ✅ STEP 1: Validate POST data exists
+        if (empty($_POST)) {
+            return wp_send_json_error([
+                'message' => 'No search parameters provided',
+                'code' => 'missing_post_data'
+            ], 400);
+        }
+
+        // ✅ REDIRECT CHECK: Ensure user is on the correct resort accommodation page
+        $selected_resort = isset($_POST['resort']) ? sanitize_text_field($_POST['resort']) : '';
+        if (!empty($selected_resort)) {
+            // Normalize the resort slug (ensure lowercase and remove suffix)
+            $resort_base = str_replace('-accommodation', '', strtolower($selected_resort));
+            $referer = wp_get_referer();
+            
+            if ($referer) {
+                $referer_path = parse_url($referer, PHP_URL_PATH);
+                // The expected URL structure is /{resort}/accommodation/
+                $required_segment = '/' . $resort_base . '/accommodation/';
+                
+                // If the referer path doesn't strictly contain the resort + /accommodation/ segment, trigger redirect
+                if (strpos($referer_path, $required_segment) === false) {
+                    return wp_send_json_success([
+                        'redirect' => home_url($required_segment),
+                        'message'  => 'Redirecting to ' . ucfirst($resort_base) . ' accommodation...'
+                    ]);
+                }
+            }
+        }
+
+        // ✅ STEP 2: Validate and sanitize date parameters
+        $checkin = isset($_POST['checkin']) ? sanitize_text_field($_POST['checkin']) : '';
+        $checkout = isset($_POST['checkout']) ? sanitize_text_field($_POST['checkout']) : '';
+
+        $has_dates = !empty($checkin) && !empty($checkout);
+
+        // ✅ STEP 3: Check if hotel/booking system search is requested
+        $is_hotel_search = !empty($_POST['hotel_search']);
+
+        // ✅ STEP 4: Route to appropriate search function
+        if ($has_dates && $is_hotel_search) {
+            // Use Booking System API for hotel search
+            hz_search_in_booking_system();
+        } else {
+            // Fall back to local WordPress search
+            niseko_search_local();
+        }
+
+    }
+    catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        return wp_send_json_error([
+            'message' => 'An unexpected error occurred during search',
+            'code' => 'unexpected_error',
+            'details' => $e->getMessage()
+        ], 500);
+    }
+}
+
+/**
+ * Search accommodations using local WordPress database
+ * Queries accommodation posts matching user filters and returns paginated results
+ * 
+ * @return void Sends JSON response with HTML and pagination info
+ */
+function niseko_search_local()
+{
+    try {
+        // ✅ STEP 1: Validate and build search query arguments
+        if (empty($_POST)) {
+            return wp_send_json_error([
+                'message' => 'No search parameters provided',
+                'code' => 'missing_search_params'
+            ], 400);
+        }
+
+        $args = niseko_build_search_query_args($_POST);
+        $all_acc_args = niseko_build_search_query_args($_POST, ['posts_per_page' => -1]);
+
+        if (!is_array($args) || empty($args)) {
+            return wp_send_json_error([
+                'message' => 'Failed to build search query',
+                'code' => 'query_build_failed'
+            ], 500);
+        }
+
+        // ✅ STEP 2: Execute paginated accommodation query
+        $query = new WP_Query($args);
+
+        if (!is_object($query) || !isset($query->posts)) {
+            return wp_send_json_error([
+                'message' => 'Failed to query accommodations',
+                'code' => 'query_execution_failed'
+            ], 500);
+        }
+
+        // ✅ STEP 3: Build accommodation HTML output
+        ob_start();
+
+        if ($query->have_posts()) {
+            $count = 0;
+            while ($query->have_posts()) {
+                $query->the_post();
+                $count++;
+                get_template_part('partials/accommodation-box');
+
+                // Show Expert Recommendation CTA after the first 3 cards on page 1
+                if ($count === 3 && (isset($args['paged']) ? (int)$args['paged'] : 1) === 1) {
+                    echo kv_get_expert_recommendation_cta();
+                }
+            }
+        } else {
+            echo '<p class="no-results">No accommodation found.</p>';
+        }
+
+        $html_output = ob_get_clean();
+        wp_reset_postdata();
+
+        // ✅ STEP 4: Get all hotel IDs for room count calculation
+        $all_acc_query = new WP_Query($all_acc_args);
+        $hotel_ids = [];
+        $room_count = 0;
+
+        if (!empty($all_acc_query->posts) && is_array($all_acc_query->posts)) {
+            foreach ($all_acc_query->posts as $post) {
+                if (!is_object($post) || empty($post->ID)) {
+                    continue;
+                }
+
+                $hotel_id = get_field('acc_hotel_id', $post->ID);
+                if (!empty($hotel_id)) {
+                    $hotel_ids[] = $hotel_id;
+                }
+            }
+        }
+
+        // ✅ STEP 5: Query related room counts
+        if (!empty($hotel_ids)) {
+            $room_args = [
+                'post_type'      => 'japan_rooms',
+                'posts_per_page' => -1,
+                'fields'         => 'ids',
+                'meta_query'     => [
+                    [
+                        'key'     => 'room_hotel_id',
+                        'value'   => $hotel_ids,
+                        'compare' => 'IN',
+                    ],
+                ],
+            ];
+
+            $room_query = new WP_Query($room_args);
+            $room_count = isset($room_query->found_posts) ? (int) $room_query->found_posts : 0;
+        }
+
+        // ✅ STEP 6: Return paginated results with metadata
+        $max_pages = isset($query->max_num_pages) ? $query->max_num_pages : 1;
+        $current_page = isset($args['paged']) ? (int) $args['paged'] : 1;
+
+        return wp_send_json_success([
+            'html'      => $html_output,
+            'count'     => (int) $query->found_posts,
+            'room_count' => $room_count,
+            'has_more'  => ($current_page < $max_pages),
+        ]);
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        return wp_send_json_error([
+            'message' => 'An unexpected error occurred during search',
+            'code' => 'unexpected_error',
+            'details' => $e->getMessage()
+        ], 500);
+    }
+}
+
+/**
+ * Search availability in Booking System
+ * Validates dates, guests, and retrieves available accommodation from booking system
+ * 
+ * @return void Sends JSON response
+ */
+function hz_search_in_booking_system() {
+    try {
+        // ✅ STEP 1: Validate required date parameters
+        $checkin_raw = isset($_POST['checkin']) ? sanitize_text_field($_POST['checkin']) : '';
+        $checkout_raw = isset($_POST['checkout']) ? sanitize_text_field($_POST['checkout']) : '';
+
+        if (empty($checkin_raw) || empty($checkout_raw)) {
+            return wp_send_json_error([
+                'message' => 'Check-in and check-out dates are required',
+                'code' => 'missing_dates'
+            ], 400);
+        }
+
+        // ✅ STEP 2: Validate date format (d/m/Y)
+        $checkInObj = DateTime::createFromFormat('d/m/Y', $checkin_raw);
+        $checkOutObj = DateTime::createFromFormat('d/m/Y', $checkout_raw);
+
+        if (!$checkInObj || !$checkOutObj) {
+            return wp_send_json_error([
+                'message' => 'Invalid date format. Please use DD/MM/YYYY',
+                'code' => 'invalid_date_format'
+            ], 400);
+        }
+
+        // ✅ STEP 3: Validate date logic (checkout after checkin)
+        if ($checkOutObj <= $checkInObj) {
+            return wp_send_json_error([
+                'message' => 'Check-out date must be after check-in date',
+                'code' => 'invalid_date_range'
+            ], 400);
+        }
+
+        // ✅ STEP 4: Validate guest count
+        $guests = intval($_POST['guests']);
+        
+        if ($guests < 1 || $guests > 20) {
+            return wp_send_json_error([
+                'message' => 'Guest count must be between 1 and 20',
+                'code' => 'invalid_guest_count'
+            ], 400);
+        }
+
+        // ✅ STEP 5: Convert date format for API
+        $checkIn = hz_convert_date_format($checkin_raw, 'd-M-Y');
+        $checkOut = hz_convert_date_format($checkout_raw, 'd-M-Y');
+
+        if (!$checkIn || !$checkOut) {
+            return wp_send_json_error([
+                'message' => 'Failed to process dates',
+                'code' => 'date_conversion_failed'
+            ], 500);
+        }
+
+        $localHotelData = hz_get_local_property_ids_and_args($_POST);
+        cf_log( $localHotelData, 'localHotelData' );
+        if (!is_array($localHotelData)) {
+            return wp_send_json_error([
+                'message' => 'Failed to retrieve property data',
+                'code' => 'property_retrieval_failed'
+            ], 500);
+        }
+
+        $hotel_ids = $localHotelData['ids'] ?? [];
+        $args = $localHotelData['args'] ?? [];
+
+        cf_log( $args, 'acc_args' );
+        if (empty($hotel_ids)) {
+            return wp_send_json_success([
+                'html' => '<p>No properties match your search criteria. Please try different filters.</p>',
+                'count' => 0,
+                'room_count' => 0,
+                'has_more' => false,
+            ]);
+        }
+        // ✅ STEP 7: Query booking system for availability (with caching)
+        $roombossData = kv_roomboss_available_ids_cached( $hotel_ids, $args );
+        if (is_wp_error($roombossData)) {
+            return wp_send_json_error([
+                'message' => 'Error retrieving availability: ' . $roombossData->get_error_message(),
+                'code' => 'availability_query_failed'
+            ], 500);
+        }
+
+        if (empty($roombossData)) {
+            return wp_send_json_success([
+                'html' => '<p>No availability found for the selected dates. Please try different dates.</p>',
+                'count' => 0,
+                'room_count' => 0,
+                'has_more' => false,
+            ]);
+        }
+
+        // ✅ STEP 8: Render accommodation results
+        $availableHotelIds = array_keys($roombossData);
+        niseko_search_roomboss_wp($availableHotelIds, $roombossData);
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        return wp_send_json_error([
+            'message' => 'An unexpected error occurred while searching',
+            'code' => 'unexpected_error',
+            'details' => $e->getMessage()
+        ], 500);
+    }
+}
+
+function get_room_count_from_roomboss_hotels($hotel_ids)
+{
+    $rooms_query = new WP_Query([
+        'post_type'      => 'japan_rooms',
+        'post_status'    => 'publish',
+        'posts_per_page' => -1,
+        'fields'         => 'ids',
+        'meta_query'     => [
+            [
+                'key'     => 'property_id',
+                'value'   => $hotel_ids,
+                'compare' => 'IN',
+            ],
+        ],
+    ]);
+    return (int)$rooms_query->found_posts ?? 0;;
+    // return $rooms_query ?? [];
+}
+
+/**
+ * Get available hotel IDs with pricing from Booking System (cached)
+ * 
+ * @param array $hotelIds List of hotel IDs to query
+ * @param array $args Search parameters (start_date, end_date, maxPersons, etc.)
+ * @return array|WP_Error Array of results or WP_Error on failure
+ */
+function kv_roomboss_available_ids_cached(
+    array $hotelIds,
+    array $args
+) {
+    try {
+        // ✅ STEP 1: Validate input parameters
+        if (empty($hotelIds) || !is_array($hotelIds)) {
+            return [];
+        }
+
+        $hotelIds = array_filter($hotelIds); // Remove empty values
+        if (empty($hotelIds)) {
+            return [];
+        }
+
+        $args['propertyIds'][] = $hotelIds; // Ensure hotel IDs are included in API args
+
+        cf_log( $hotelIds, 'hotelIds' );
+        // pre($hotelIds, 0);
+        // ✅ STEP 2: Validate and extract date parameters
+        $checkIn = isset($args['start_date']) ? sanitize_text_field($args['start_date']) : '';
+        $checkOut = isset($args['end_date']) ? sanitize_text_field($args['end_date']) : '';
+        $guests = !empty($args['maxPersons']) ? intval($args['maxPersons']) : 1;
+
+        if (empty($checkIn) || empty($checkOut)) {
+            return new WP_Error(
+                'invalid_dates',
+                'Start date and end date are required for availability check'
+            );
+        }
+
+        // ✅ STEP 3: Generate cache key
+        $cache_key = 'rb_full_' . md5($checkIn . $checkOut . $guests . implode(',', $hotelIds));
+        
+        // ✅ STEP 4: Check cache first
+        $cached_body = get_transient($cache_key);
+        // pre($cached_body, 1);
+        cf_log( 'came_here_2', 'came_here_2', 'txt', true, true );
+        if ($cached_body !== false && is_array($cached_body)) {
+            return kv_roomboss_parse_availability($cached_body);
+        }
+        // pre($cached_body, 1);
+
+        // ✅ STEP 5: Fetch from Booking System API
+        $url = KV_BOOKING_SYSTEM_BASE . '/api/quotation-filteration';
+        $bs_args = kv_booking_system_filter_args(KV_BS_authToken, $args);
+        cf_log( 'came_here_3', 'came_here_3', 'txt', true, true );
+        cf_log( $bs_args, 'bs_args123' );
+        
+        if (!$bs_args) {
+            return new WP_Error(
+                'invalid_request_args',
+                'Failed to build booking system request arguments'
+            );
+        }
+
+        $response = wp_remote_get($url, $bs_args);
+
+        // ✅ STEP 6: Validate API response
+        if (is_wp_error($response)) {
+            return new WP_Error(
+                'api_request_failed',
+                'Failed to connect to booking system: ' . $response->get_error_message()
+            );
+        }
+
+        $http_code = wp_remote_retrieve_response_code($response);
+        if ($http_code !== 200) {
+            return new WP_Error(
+                'api_error',
+                'Booking system returned HTTP ' . $http_code
+            );
+        }
+
+        // ✅ STEP 7: Parse JSON response
+        $response_body = wp_remote_retrieve_body($response);
+        if (empty($response_body)) {
+            return new WP_Error(
+                'empty_response',
+                'Booking system returned empty response'
+            );
+        }
+
+        
+        $body = json_decode($response_body, true);
+
+        if (!is_array($body)) {
+            return new WP_Error(
+                'invalid_json',
+                'Booking system returned invalid JSON'
+            );
+        }
+
+        // ✅ STEP 8: Cache the response
+        set_transient($cache_key, $body, 10 * MINUTE_IN_SECONDS);
+
+        // ✅ STEP 9: Parse and return availability data
+        return kv_roomboss_parse_availability($body);
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        return new WP_Error(
+            'unexpected_error',
+            'Error retrieving availability: ' . $e->getMessage()
+        );
+    }
+}
+
+/**
+ * Parse booking system availability response into standardized format
+ * 
+ * @param array $body API response body
+ * @return array Parsed results with hotel IDs as keys
+ */
+function kv_roomboss_parse_availability(array $body): array {
+    $results = [];
+
+    // Validate properties exist in response
+    if (empty($body['properties']) || !is_array($body['properties'])) {
+        return [];
+    }
+
+    foreach ($body['properties'] as $hotel) {
+        // Skip hotels without units
+        if (empty($hotel['Units']) || !is_array($hotel['Units'])) {
+            continue;
+        }
+
+        // Skip hotels without property ID
+        if (empty($hotel['PropertyId'])) {
+            continue;
+        }
+
+        $prices = [];
+        $bedrooms = [];
+        $room_count = 0;
+
+        // ✅ Iterate through units
+        foreach ($hotel['Units'] as $unit) {
+            // Validate unit data
+            if (empty($unit) || !is_array($unit)) {
+                continue;
+            }
+
+            // Skip invalid units (Unit count <= 0)
+            if (empty($unit['Unit']) || intval($unit['Unit']) <= 0) {
+                continue;
+            }
+
+            // Validate rooms data
+            if (empty($unit['Rooms']) || !is_array($unit['Rooms'])) {
+                continue;
+            }
+
+            // ✅ Iterate through rooms
+            foreach ($unit['Rooms'] as $room) {
+                if (empty($room) || !is_array($room)) {
+                    continue;
+                }
+
+                $room_count++;
+
+                // Collect pricing data
+                if (!empty($room['ActualPrice']) && is_numeric($room['ActualPrice'])) {
+                    $prices[] = (float) $room['ActualPrice'];
+                }
+
+                // Collect bedroom count data
+                if (!empty($room['numberBedrooms']) && is_numeric($room['numberBedrooms'])) {
+                    $bedrooms[] = (int) $room['numberBedrooms'];
+                }
+            }
+        }
+
+        // Only include hotels with at least one room
+        if ($room_count === 0) {
+            continue;
+        }
+
+        // Build result entry for this hotel
+        $results[$hotel['PropertyId']] = [
+            'min_price'  => !empty($prices) ? min($prices) : null,
+            'bedrooms'   => !empty($bedrooms) ? array_values(array_unique($bedrooms)) : [],
+            'room_count' => $room_count,
+        ];
+    }
+
+    return $results;
+}
+
+/**
+ * Build Booking System API request arguments
+ * Merges default body with user overrides and creates HTTP headers
+ * 
+ * @param string $authorization Bearer token for API authentication
+ * @param array $overrides Optional request body parameters to override defaults
+ * @return array HTTP request arguments (method, headers, body, timeout)
+ */
+function kv_booking_system_filter_args( string $authorization, array $overrides = []): array {
+    try {
+        // ✅ STEP 1: Validate authorization token
+        $authorization = trim($authorization);
+        if (empty($authorization)) {
+            return [];
+        }
+
+        // ✅ STEP 2: Build default request body
+        $body = [
+            "accommodationName" => "",
+            "minRange" => null,
+            "maxRange" => null,
+            "resortId" => 1,
+            "locationCode" => "",
+            "boardBasisId" => "",
+            "start_date" => "02-Apr-2026",
+            "end_date" => "08-Apr-2026",
+            "duration" => 6,
+            "units" => 1,
+            "channel" => true,
+            "bedBank" => true,
+            "testMode" => false,
+            "propertType" => [
+                "apartment" => false,
+                "chalet" => false,
+                "hotel" => false
+            ],
+            "maxPersons" => 1,
+            "totalAdults" => 1,
+            "totalChildren" => 0,
+            "totalInfants" => 0,
+            "offset" => 0,
+            "limit" => 50,
+            "adults" => [1],
+            "children" => [0],
+            "infants" => [0],
+            "propertyIds" => []
+        ];
+
+        // ✅ STEP 3: Merge overrides safely (only process if overrides is array)
+        if (!empty($overrides) && is_array($overrides)) {
+            $body = array_replace_recursive($body, $overrides);
+        }
+
+        // ✅ STEP 4: Build HTTP headers with authorization
+        $headers = [
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'Bearer ' . $authorization,
+        ];
+
+        // ✅ STEP 5: Return complete request arguments
+        return [
+            'method'      => 'POST',
+            'headers'     => $headers,
+            'body'        => wp_json_encode($body),
+            'timeout'     => 30,
+            'data_format' => 'body',
+        ];
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        error_log('Error building booking system filter args: ' . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Calculate number of days between two dates
+ * 
+ * @param string $start_date Start date in 'd-M-Y' format (e.g., '02-Apr-2026')
+ * @param string $end_date End date in 'd-M-Y' format (e.g., '08-Apr-2026')
+ * @return int|false Number of days as integer, or false on error
+ */
+function get_duration_from_date( $start_date, $end_date ) {
+    try {
+        // ✅ STEP 1: Validate parameters are not empty
+        if (empty($start_date) || empty($end_date)) {
+            return false;
+        }
+
+        // ✅ STEP 2: Sanitize input dates
+        $start_date = trim((string) $start_date);
+        $end_date = trim((string) $end_date);
+
+        if (empty($start_date) || empty($end_date)) {
+            return false;
+        }
+
+        // ✅ STEP 3: Parse dates with error handling
+        $date1 = DateTime::createFromFormat('d-M-Y', $start_date);
+        $date2 = DateTime::createFromFormat('d-M-Y', $end_date);
+
+        if (!$date1 || !$date2) {
+            return false;
+        }
+
+        // ✅ STEP 4: Calculate and return duration
+        $duration = $date1->diff($date2);
+        return (int) $duration->days;
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        error_log('Error calculating date duration: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Format date from one format to another
+ * 
+ * @param string $date_str - Date string
+ * @param string $newFormat - Target format (default 'Y-m-d')
+ * @param string $format - Source format (default 'Ymd')
+ * @return string - Formatted date or original string if parsing fails
+ */
+function date_format_readable($date_str, $newFormat = 'Y-m-d', $format = 'Y-m-d') {
+    $date = DateTime::createFromFormat($format, $date_str);
+    if ($date) {
+        return $date->format($newFormat);
+    }
+    return $date_str;
+}
+
+/**
+ * Convert date from d/m/Y format to specified output format
+ * Input format: d/m/Y (e.g., '10/04/2026' = April 10, 2026)
+ * Output formats: 'd-M-Y' (02-Apr-2026), 'Y-m-d', etc.
+ * 
+ * @param string $date Input date in d/m/Y format
+ * @param string $format Output format string for DateTime
+ * @return string|false Formatted date string, or false on error
+ */
+function hz_convert_date_format( string $date, string $format ) {
+    try {
+        // ✅ STEP 1: Validate input parameters
+        $date = trim($date);
+        $format = trim($format);
+
+        if (empty($date) || empty($format)) {
+            return false;
+        }
+
+        // ✅ STEP 2: Parse date with input format d-M-Y (e.g. 10-Apr-2026)
+        $dateObject = DateTime::createFromFormat('d-M-Y', $date);
+
+        if (!$dateObject) {
+            return false;
+        }
+
+        // ✅ STEP 3: Format and return result
+        return $dateObject->format($format);
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        error_log('Error converting date format: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Get local property IDs and build booking system API arguments
+ * Queries WordPress database for accommodation matching filters and constructs API request body
+ * 
+ * @param array $input Search input containing filters (checkin, checkout, resort, prices, etc.)
+ * @return array Array with 'ids' => property IDs array and 'args' => booking system request body
+ */
+function hz_get_local_property_ids_and_args(array $input): array {
+    $empty_result = ['ids' => [], 'args' => []];
+    try {
+        // ✅ STEP 1: Validate input and query local properties
+        if (empty($input) || !is_array($input)) {
+            return $empty_result;
+        }
+
+        cf_log( 'test-1', 'cf_args', 'txt', true, true );
+        $args = niseko_build_search_query_args($input, [
+            'fields'         => 'ids',
+            'posts_per_page' => -1,
+        ]);
+
+        if (!is_array($args) || empty($args)) {
+            return $empty_result;
+        }
+
+        $query = new WP_Query($args);
+        cf_log( $query, 'cf_query', 'txt', true, true );
+        if (empty($query->posts) || !is_array($query->posts)) {
+            return $empty_result;
+        }
+        cf_log( $query->posts, 'cf_posts', 'txt', true, true );
+        $booking_sys_args = [];
+
+        // ✅ STEP 2: Process date parameters
+        if (isset($input['checkin'], $input['checkout'])) {
+            $checkin_raw = sanitize_text_field($input['checkin']);
+            $checkout_raw = sanitize_text_field($input['checkout']);
+
+            if (!empty($checkin_raw) && !empty($checkout_raw)) {
+                // Convert dates d/m/Y → d-M-Y format for API
+                $checkin = hz_convert_date_format($checkin_raw, 'd-M-Y');
+                $checkout = hz_convert_date_format($checkout_raw, 'd-M-Y');
+
+                if ($checkin && $checkout) {
+                    $duration = get_duration_from_date($checkin, $checkout);
+
+                    if ($duration !== false && $duration > 0) {
+                        $booking_sys_args['start_date'] = $checkin;
+                        $booking_sys_args['end_date'] = $checkout;
+                        $booking_sys_args['duration'] = (int) $duration;
+                    }
+                }
+            }
+        }
+
+        // ✅ STEP 3: Process resort parameter
+        if (!empty($input['resort'])) {
+            $taxonomy_name = sanitize_text_field($input['resort']);
+            $term = get_term_by('slug', $taxonomy_name, 'accommodation-cat');
+
+            if ($term && !is_wp_error($term)) {
+                $term_id = intval($term->term_id);
+                $resortId = get_field('bs_resort_id', 'term_' . $term_id);
+
+                if (!empty($resortId)) {
+                    $booking_sys_args['resortId'] = intval($resortId);
+                }
+            }
+        }
+
+        // ✅ STEP 4: Process price parameters
+        if (isset($input['price_min'], $input['price_max'])) {
+            $minRange = sanitize_text_field($input['price_min']);
+            $maxRange = sanitize_text_field($input['price_max']);
+
+            if (!empty($minRange) && !empty($maxRange)) {
+                $booking_sys_args['minRange'] = (float) $minRange;
+                $booking_sys_args['maxRange'] = (float) $maxRange;
+            }
+        }
+
+        // ✅ STEP 5: Process accommodation type parameters
+        if (!empty($input['accommodation_type']) && is_array($input['accommodation_type'])) {
+            $acc_types = array_map('strtolower', $input['accommodation_type']);
+            $acc_types = array_map('sanitize_text_field', $acc_types);
+
+            $booking_sys_args['propertType']['apartment'] = in_array('apartments', $acc_types, true);
+            $booking_sys_args['propertType']['chalet'] = in_array('chalet', $acc_types, true);
+            $booking_sys_args['propertType']['hotel'] = in_array('hotel rooms', $acc_types, true);
+        }
+
+        // ✅ STEP 6: Process booking channel parameter
+        if (!empty($input['booking'])) {
+            $booking_sys_args['channel'] = true;
+            $booking_sys_args['bedBank'] = false;
+        }
+
+        // ✅ STEP 7: Process areas/location parameter
+        if (!empty($input['areas[]'])) {
+            $areas = sanitize_text_field($input['areas[]']);
+            if (!empty($areas)) {
+                $booking_sys_args['locationCode'] = $areas;
+            }
+        }
+
+
+        // ✅ STEP 7: Process areas/location parameter
+        if (!empty($input['property_id'])) {
+            $property = sanitize_text_field($input['property_id']);
+            if (!empty($property)) {
+                $booking_sys_args['propertyIds'] = [$property];
+            }
+        }
+
+        // ✅ STEP 8: Extract property IDs from query results
+        $ids = array_values(
+            array_unique(
+                array_filter(
+                    array_map(
+                        function($post_id) {
+                            if (!is_numeric($post_id)) {
+                                return null;
+                            }
+                            $property_id = get_field('property_id', (int) $post_id);
+                            return !empty($property_id) ? $property_id : null;
+                        },
+                        $query->posts
+                    )
+                )
+            )
+        );
+
+        // ✅ STEP 9: Return property IDs and booking system arguments
+        return [
+            'ids' => $ids,
+            'args' => $booking_sys_args,
+        ];
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        error_log('Error building property IDs and booking args: ' . $e->getMessage());
+        return $empty_result;
+    }
+}
+
+/**
+ * Retrieve rooms for a hotel property with optional room type filtering
+ * 
+ * @param mixed $hotel_id Property ID to query rooms for
+ * @param array $allowedRoomTypeIds Optional array of room type IDs to filter by
+ * @return array Array containing 'rooms' (array of posts) and 'bedroom_types' (unique bedroom counts)
+ */
+function get_hotel_rooms($hotel_id, array $allowedRoomTypeIds = [])
+{
+    try {
+        // ✅ STEP 1: Validate and sanitize hotel_id parameter
+        if (empty($hotel_id)) {
+            return [
+                'rooms' => [],
+                'bedroom_types' => [],
+            ];
+        }
+
+        // ✅ STEP 2: Build base meta query
+        $meta_query = [
+            'relation' => 'AND',
+            [
+                'key'     => 'property_id',
+                'value'   => $hotel_id,
+                'compare' => '=',
+            ],
+        ];
+
+        // ✅ STEP 3: Add optional room type filter
+        if (!empty($allowedRoomTypeIds) && is_array($allowedRoomTypeIds)) {
+            // Sanitize and filter room type IDs
+            $allowedRoomTypeIds = array_filter(array_map('absint', $allowedRoomTypeIds));
+
+            if (!empty($allowedRoomTypeIds)) {
+                $meta_query[] = [
+                    'key'     => 'actual_room_id',
+                    'value'   => $allowedRoomTypeIds,
+                    'compare' => 'IN',
+                ];
+            }
+        }
+
+        // ✅ STEP 4: Query for rooms
+        $args = [
+            'post_type'      => 'japan_rooms',
+            'posts_per_page' => -1,
+            'post_status'    => ['publish', 'draft', 'pending'],
+            'meta_query'     => $meta_query,
+        ];
+
+        $rooms = get_posts($args);
+
+        // Validate query result
+        if (!is_array($rooms)) {
+            $rooms = [];
+        }
+
+        // ✅ STEP 5: Collect distinct bedroom types from results
+        $bedroom_types = [];
+
+        foreach ($rooms as $room) {
+            // Validate room object structure
+            if (!is_object($room) || empty($room->ID)) {
+                continue;
+            }
+
+            $bedrooms = get_field('room_bedroom', $room->ID);
+
+            // Validate and type-cast bedroom count
+            if (!empty($bedrooms)) {
+                $bedrooms = (int) $bedrooms;
+
+                if ($bedrooms > 0 && !in_array($bedrooms, $bedroom_types, true)) {
+                    $bedroom_types[] = $bedrooms;
+                }
+            }
+        }
+
+        // ✅ STEP 6: Sort bedroom types for consistent output
+        sort($bedroom_types);
+
+        // ✅ STEP 7: Return results
+        return [
+            'rooms'         => $rooms,
+            'bedroom_types' => $bedroom_types,
+        ];
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        error_log('Error in get_hotel_rooms: ' . $e->getMessage());
+
+        return [
+            'rooms' => [],
+            'bedroom_types' => [],
+        ];
+    }
+}
+
+function niseko_build_search_query_args(array $input, array $overrides = []): array
+{
+
+    $paged    = isset($input['page']) ? max(1, (int) $input['page']) : 1;
+    $per_page = 6;
+
+    $meta_query = [ /*'relation' => 'AND'*/ ];
+    $tax_query  = [];
+
+    /* =========================
+     * TAXONOMY
+     * ========================= */
+    if (!empty($input['category_id']) || !empty($input['category_slug']) || !empty($input['resort'])) {
+        $tax_query = [
+            'relation' => 'AND',
+        ];
+
+        if (!empty($input['category_id'])) {
+            $tax_query[] = [
+                'taxonomy'         => 'accommodation-cat',
+                'field'            => 'term_id',
+                'terms'            => [(int) $input['category_id']],
+                'include_children' => true,
+            ];
+        }
+
+        if (!empty($input['category_slug'])) {
+            $tax_query[] = [
+                'taxonomy' => 'accommodation-cat',
+                'field'    => 'slug',
+                'terms'    => array(sanitize_text_field($input['category_slug'])),
+                'include_children' => true,
+            ];
+        }
+
+        /* =========================
+         * RESORT (OPTIONAL)
+         * ========================= */
+
+        if (!empty($input['resort'])) {
+            $tax_query[] = [
+                'taxonomy' => 'accommodation-cat',
+                'field'    => 'slug',
+                'terms'    => array(sanitize_text_field($input['resort'])),
+                'include_children' => true,
+            ];
+        }
+    }
+
+    /* =========================
+     * BEDROOMS
+     * ========================= */
+    if (!empty($input['bedrooms']) && is_array($input['bedrooms'])) {
+        $bedroom_sub = ['relation' => 'OR'];
+        foreach ($input['bedrooms'] as $bedroom) {
+            $bedroom_sub[] = [
+                'key'     => 'bedroom_number',
+                'value'   => '"' . sanitize_text_field($bedroom) . '"',
+                'compare' => 'LIKE',
+            ];
+        }
+        $meta_query[] = $bedroom_sub;
+    }
+
+    /* =========================
+     * PRICE
+     * ========================= */
+    if (
+        isset($input['price_min'], $input['price_max']) &&
+        $input['price_min'] !== '' &&
+        $input['price_max'] !== ''
+    ) {
+        $meta_query[] = [
+            'key'     => 'min_room_price',
+            'value'   => [
+                (int) $input['price_min'],
+                (int) $input['price_max'],
+            ],
+            'type'    => 'NUMERIC',
+            'compare' => 'BETWEEN',
+        ];
+    }
+
+    /* =========================
+     * AREA
+     * ========================= */
+    if (!empty($input['areas']) && is_array($input['areas'])) {
+        $tax_query[] = [
+            'taxonomy' => 'accommodation-cat',
+            'field'    => 'slug',
+            'terms'    => array_map('sanitize_text_field', $input['areas']),
+            'operator' => 'IN',
+        ];
+    }
+
+    /* =========================
+     * TYPE
+     * ========================= */
+    if (!empty($input['accommodation_type']) && is_array($input['accommodation_type'])) {
+        $type_sub = ['relation' => 'OR'];
+        foreach ($input['accommodation_type'] as $type) {
+            $type_sub[] = [
+                'key'     => 'type',
+                'value'   => '"' . sanitize_text_field($type) . '"',
+                'compare' => 'LIKE',
+            ];
+        }
+        $meta_query[] = $type_sub;
+    }
+
+    /* =========================
+     * ski in ski out
+     * ========================= */
+    if (!empty($input['ski_in_ski_out'])) {
+        $ski_in_out = [
+            'taxonomy' => 'property_ammenites',
+            'field'    => 'slug',
+            'terms'    => 'ski-in-ski-out',
+        ];
+        $tax_query[] = $ski_in_out;
+    }
+
+    /* =========================
+     * onsen
+     * ========================= */
+    if (!empty($input['onsen'])) {
+        $onsen = ['relation' => 'AND'];
+        $onsen[] = [
+            'key'     => 'type',
+            'value'   => '"' . $input['onsen'] . '"',
+            'compare' => 'LIKE',
+        ];
+        $meta_query[] = $onsen;
+    }
+
+
+    /* =========================
+     * discount
+     * ========================= */
+    if (!empty($input['discount'])) {
+        $discount = ['relation' => 'AND'];
+        $discount[] = [
+            'key'     => 'is_discount',
+            'value'   => '1',
+            'compare' => '=',
+        ];
+        $meta_query[] = $discount;
+    }
+
+    if (!empty($input['booking'])) {
+        $booking = ['relation' => 'AND'];
+        $booking[] = [
+            'key'     => 'is_roomboss',
+            'value'   => '1',
+            'compare' => '=',
+        ];
+
+        $booking[] = [
+            'key'     => 'acc_hotel_id',
+            'compare' => 'EXISTS',
+        ];
+        $meta_query[] = $booking;
+    }
+
+    /* =========================
+     * SORTING
+     * ========================= */
+    
+    /* =========================
+     * SORTING
+     * ========================= */
+
+    // Default: menu_order
+    $orderby  = ['menu_order' => 'ASC', 'title' => 'ASC'];
+    $order    = 'ASC';
+    $meta_key = '';
+
+    if (!empty($input['sort'])) {
+        switch ($input['sort']) {
+            case 'price_asc':
+                $orderby  = 'meta_value_num';
+                $meta_key = 'min_room_price';
+                $order    = 'ASC';
+                break;
+
+            case 'price_desc':
+                $orderby  = 'meta_value_num';
+                $meta_key = 'min_room_price';
+                $order    = 'DESC';
+                break;
+
+            case 'title_asc':
+                $orderby  = 'title';
+                $order    = 'ASC';
+                $meta_key = '';
+                break;
+
+            case 'title_desc':
+                $orderby  = 'title';
+                $order    = 'DESC';
+                $meta_key = '';
+                break;
+
+            case 'date_desc':
+                $orderby  = 'date';
+                $order    = 'DESC';
+                $meta_key = '';
+                break;
+        }
+    }
+
+    $args = [
+        'post_type'      => 'accommodation',
+        'post_status'    => 'publish',
+        'posts_per_page' => $per_page,
+        'paged'          => $paged,
+        'meta_query'     => $meta_query,
+        'orderby'        => $orderby,
+        'order'          => $order,
+    ];
+
+    if (!empty($input['location'])) {
+        $args['title'] = $input['location'];
+    }
+
+    if (!empty($meta_key)) {
+        $args['meta_key'] = $meta_key;
+    }    
+
+    if ($tax_query) {
+        $args['tax_query'] = $tax_query;
+    }
+
+    cf_log( 'args', 'cf_args' );
+    cf_log( $args, 'cf_args' );
+    cf_log( 'overrides', 'cf_args' );
+    cf_log( $overrides, 'cf_args' );
+    cf_log( 'txt-q', 'cf_args' );
+    cf_log( array_replace_recursive($args, $overrides), 'cf_args' );
+
+    // 🔁 Allow overrides (fields, posts_per_page, etc.)
+    return array_replace_recursive($args, $overrides);
+}
+
+
+/**
+ * Search and display accommodations from RoomBoss availability data
+ * Queries local WordPress posts matching available hotel IDs and renders accommodation cards
+ * 
+ * @param array $availableHotelIds List of property IDs available from booking system
+ * @param array $roombossData Optional associative array of booking system data keyed by property ID
+ * @return void Sends JSON response with HTML content and pagination info
+ */
+function niseko_search_roomboss_wp(array $availableHotelIds, array $roombossData = []) {
+    try {
+        // ✅ STEP 1: Validate input parameters
+        if (empty($availableHotelIds) || !is_array($availableHotelIds)) {
+            wp_send_json_success([
+                'html'     => '<p>No accommodation available.</p>',
+                'count'    => 0,
+                'room_count' => 0,
+                'has_more' => false,
+            ]);
+        }
+
+        // Validate roombossData is array or set to empty if invalid
+        if (!is_array($roombossData)) {
+            $roombossData = [];
+        }
+
+        // ✅ STEP 2: Get room count from available hotels
+        $room_count = get_room_count_from_roomboss_hotels($availableHotelIds);
+        $room_count = intval($room_count);
+
+        // ✅ STEP 3: Build WP_Query arguments with available hotel IDs filter
+        $args = niseko_build_search_query_args($_POST, [
+            'meta_query' => [
+                'relation' => 'AND',
+                [
+                    'key'     => 'property_id',
+                    'value'   => $availableHotelIds,
+                    'compare' => 'IN',
+                ],
+            ],
+        ]);
+
+        // Validate query arguments
+        if (!is_array($args) || empty($args)) {
+            wp_send_json_success([
+                'html'     => '<p>No accommodation available.</p>',
+                'count'    => 0,
+                'room_count' => $room_count,
+                'has_more' => false,
+            ]);
+        }
+
+        // ✅ STEP 4: Execute query and validate results
+        $query = new WP_Query($args);
+
+        if (!is_object($query) || !isset($query->posts) || !is_array($query->posts)) {
+            wp_send_json_success([
+                'html'     => '<p>No accommodation available.</p>',
+                'count'    => 0,
+                'room_count' => $room_count,
+                'has_more' => false,
+            ]);
+        }
+
+        // ✅ STEP 5: Build HTML output from matching posts
+        ob_start();
+
+        if ($query->have_posts()) {
+            $count = 0;
+            while ($query->have_posts()) {
+                $query->the_post();
+                $count++;
+
+                $post_id = get_the_ID();
+                $property_id = get_field('property_id', $post_id);
+                // Validate property ID exists in roomboss data
+                if (!empty($property_id) && isset($roombossData[$property_id])) {
+                    $GLOBALS['kv_roomboss_current'] = $roombossData[$property_id];
+                } else {
+                    $GLOBALS['kv_roomboss_current'] = null;
+                }
+
+                // Render accommodation card template
+                get_template_part('partials/accommodation-box', null, [
+                    'bed_bank' => false,
+                    'room_boss' => true,
+                ]);
+
+                // Show Expert Recommendation CTA after the first 3 cards on page 1
+                if ($count === 3 && (isset($args['paged']) ? (int)$args['paged'] : 1) === 1) {
+                    echo kv_get_expert_recommendation_cta();
+                }
+
+                // Clean up global state
+                unset($GLOBALS['kv_roomboss_current']);
+            }
+        } else {
+            echo '<p>No accommodation available.</p>';
+        }
+
+        wp_reset_postdata();
+
+        // ✅ STEP 6: Prepare and send JSON response
+        $pagination_page = isset($args['paged']) ? intval($args['paged']) : 1;
+        $max_pages = isset($query->max_num_pages) ? intval($query->max_num_pages) : 1;
+
+        wp_send_json_success([
+            'html'       => ob_get_clean(),
+            'count'      => intval($query->found_posts),
+            'room_count' => $room_count,
+            'has_more'   => ($pagination_page < $max_pages),
+        ]);
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        error_log('Error in niseko_search_roomboss_wp: ' . $e->getMessage());
+
+        wp_send_json_success([
+            'html'     => '<p>No accommodation available.</p>',
+            'count'    => 0,
+            'room_count' => 0,
+            'has_more' => false,
+        ]);
+    }
+}
+
+function get_post_id_by_property_id( $property_id ){
+    $query = new WP_Query([
+        'post_type'      => 'accommodation',
+        'posts_per_page' => 1,
+        'meta_query'     => [
+            [
+                'key'     => 'property_id',
+                'value'   => $property_id,
+                'compare' => '=',
+            ],
+        ],
+    ]);
+
+    if ( $query->have_posts() ) {
+        return $query->posts[0]->ID;
+    }
+
+    return null;
+}
+
+function get_resort_id_by_property_id( $property_id ){
+
+    $post_id = get_post_id_by_property_id( $property_id );
+
+    if ( ! $post_id ) {
+        return null;
+    }
+
+    $terms = get_the_terms( $post_id, 'accommodation-cat' );
+
+    if ( is_wp_error( $terms ) || empty( $terms ) ) {
+        return null;
+    }
+
+    foreach ( $terms as $term ) {
+        $resort_id = get_field( 'bs_resort_id', 'term_' . $term->term_id );
+        if ( $resort_id ) {
+            return $resort_id;
+        }
+    }
+
+    return null;
+}
+
+function get_available_bedrooms( $rooms ){
+    $available_bedroom_types = [];
+    if (!empty($rooms)) {
+    
+        foreach ($rooms as $room) {
+            if (!empty($room['numberBedrooms'])) {
+                $available_bedroom_types[] = (int) $room['numberBedrooms'];
+            }
+        }
+
+        $available_bedroom_types = array_values( array_unique($available_bedroom_types) );
+        sort($available_bedroom_types);
+    }
+
+    return $available_bedroom_types;
+}
+
+// Register the AJAX action
+add_action('wp_ajax_niseko_search_roomboss_single', 'niseko_search_roomboss_single');
+add_action('wp_ajax_nopriv_niseko_search_roomboss_single', 'niseko_search_roomboss_single');
+
+/**
+ * Retrieve and display available rooms for a single hotel property
+ * Fetches room availability data and renders room cards with amenities
+ * 
+ * @return void Sends JSON response with HTML content and room metadata
+ */
+function niseko_search_roomboss_single()
+{
+    try {
+        // ✅ STEP 1: Validate and sanitize POST parameters
+        if (empty($_POST['checkin']) || empty($_POST['checkout']) || empty($_POST['property_id'])) {
+            return wp_send_json_error([
+                'message' => 'Check-in, check-out, and property ID are required',
+                'code' => 'missing_parameters'
+            ], 400);
+        }
+
+        $checkin = sanitize_text_field($_POST['checkin']);
+        $checkout = sanitize_text_field($_POST['checkout']);
+        $property_id = intval($_POST['property_id']);
+
+        // Validate property ID is numeric and positive
+        if ($property_id < 1) {
+            return wp_send_json_error([
+                'message' => 'Invalid property ID',
+                'code' => 'invalid_property_id'
+            ], 400);
+        }
+
+        // ✅ STEP 2: Fetch room availability data
+        $roomData = kv_bs_available_room_data($property_id, $checkin, $checkout, 1);
+
+        // Handle empty response
+        if (empty($roomData) || !is_array($roomData)) {
+            return wp_send_json_success([
+                'html' => '<p>No rooms available for the selected dates. Choose new dates or request a quote to find availability.</p>',
+                'count' => 0,
+                'available_bedroom_types' => [],
+                'has_more' => false,
+            ]);
+        }
+
+        // ✅ STEP 3: Validate and extract room booking flag
+        $is_roomboss = intval($roomData['is_roomboss'] ?? 0) === 1;
+
+        // ✅ STEP 4: Build HTML output from room data
+        ob_start();
+
+        // Filter out non-array items from room data
+        $room_count = 0;
+        foreach ($roomData as $key => $room) {
+            // Skip non-array items (like the 'is_roomboss' flag)
+            if (!is_array($room) || $key === 'is_roomboss') {
+                continue;
+            }
+
+            $room_count++;
+
+            // Render room card template
+            get_template_part('partials/room-box-bs', null, [
+                'room' => $room,
+                'rb' => $is_roomboss,
+                'property_id' => $property_id,
+            ]);
+        }
+
+        $html = ob_get_clean();
+
+        // Handle case where no valid rooms were processed
+        if ($room_count === 0) {
+            return wp_send_json_success([
+                'html' => '<p>No rooms available for the selected dates. Choose new dates or request a quote to find availability.</p>',
+                'count' => 0,
+                'available_bedroom_types' => [],
+                'has_more' => false,
+            ]);
+        }
+
+        // ✅ STEP 5: Extract available bedroom types
+        $available_bedroom_types = get_available_bedrooms($roomData);
+
+        // ✅ STEP 6: Send successful response with metadata
+        return wp_send_json_success([
+            'html' => $html,
+            'count' => $room_count,
+            'available_bedroom_types' => $available_bedroom_types,
+            'has_more' => false,
+        ]);
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        error_log('Error in niseko_search_roomboss_single: ' . $e->getMessage());
+
+        return wp_send_json_error([
+            'message' => 'An error occurred while loading rooms',
+            'code' => 'unexpected_error'
+        ], 500);
+    }
+}
+
+/**
+ * Fetch available room data for a specific property from booking system
+ * Queries API and extracts room information with property type flag
+ * 
+ * @param int $propertyId Property/hotel ID to query
+ * @param string $checkIn Check-in date in d/m/Y format
+ * @param string $checkOut Check-out date in d/m/Y format
+ * @param int $guests Number of guests
+ * @return array Array of rooms with 'is_roomboss' flag, empty array on failure
+ */
+function kv_bs_available_room_data(
+    int $propertyId,
+    string $checkIn,
+    string $checkOut,
+    int $guests
+): array {
+    try {
+        // var_dump($propertyId, $checkIn, $checkOut, $guests);
+        // ✅ STEP 1: Validate property ID parameter
+        if ($propertyId < 1) {
+            error_log('Invalid property ID passed to kv_bs_available_room_data: ' . $propertyId);
+            return [];
+        }
+
+        // ✅ STEP 2: Convert date format from d/m/Y to d-M-Y for API
+        // $checkInFormatted = hz_convert_date_format($checkIn, 'd-M-Y');
+        // $checkOutFormatted = hz_convert_date_format($checkOut, 'd-M-Y');
+        $checkInFormatted = date_format_readable($checkIn, 'd-M-Y', 'd/m/Y');
+        $checkOutFormatted = date_format_readable($checkOut, 'd-M-Y', 'd/m/Y');
+        // var_dump($checkInFormatted, $checkOutFormatted);
+
+        // Validate date conversion succeeded
+        if (!$checkInFormatted || !$checkOutFormatted) {
+            error_log('Failed to convert dates in kv_bs_available_room_data');
+            return [];
+        }
+
+        // ✅ STEP 3: Query booking system for availability
+        $hotel = kv_roomboss_get_availability(
+            $propertyId,
+            $checkInFormatted,
+            $checkOutFormatted,
+            intval($guests)
+        );
+        // pre($hotel, 1);
+
+        // Validate API response
+        if (empty($hotel) || !is_array($hotel)) {
+            return [];
+        }
+
+        // ✅ STEP 4: Extract room data from API response
+        if (empty($hotel[0]['Units'][0]['Rooms']) || !is_array($hotel[0]['Units'][0]['Rooms'])) {
+            return [];
+        }
+
+        $rooms = $hotel[0]['Units'][0]['Rooms'];
+
+        // ✅ STEP 5: Determine property type (RoomBoss vs BedBank)
+        $is_roomboss = !empty($hotel['PropertyRoomBossHotelId']) ? 1 : 0;
+
+        // ✅ STEP 6: Add property type flag to rooms array
+        $rooms['is_roomboss'] = $is_roomboss;
+
+        // ✅ STEP 7: Return structured room data
+        return $rooms;
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        error_log('Error in kv_bs_available_room_data: ' . $e->getMessage());
+        return [];
+    }
+}
+
+add_action('wp_ajax_niseko_load_room_details', 'niseko_load_room_details');
+add_action('wp_ajax_nopriv_niseko_load_room_details', 'niseko_load_room_details');
+
+/**
+ * Load detailed room information modal for display
+ * Renders room details template with gallery, amenities, and booking info
+ * 
+ * @return void Sends JSON response with modal HTML
+ */
+function niseko_load_room_details()
+{
+    try {
+        // ✅ STEP 1: Validate and sanitize parameters
+        $room_id = isset($_POST['room_id']) ? $_POST['room_id'] : 0;
+        $hotel_id = isset($_POST['hotel_id']) ? sanitize_text_field($_POST['hotel_id']) : 0;
+        if( empty($hotel_id) ) {
+            $hotel_id = isset($_POST['property_id']) ? sanitize_text_field($_POST['property_id']) : 0;
+        }
+
+        // Validate room ID is required and positive
+        if ($room_id < 1) {
+            return wp_send_json_error([
+                'message' => 'Room ID is required',
+                'code' => 'missing_room_id'
+            ], 400);
+        }
+
+        // ✅ STEP 2: Type-cast hotel_id appropriately
+        if (is_numeric($hotel_id)) {
+            $hotel_id = intval($hotel_id);
+        }
+
+        // ✅ STEP 3: Render room details modal template
+        ob_start();
+
+        get_template_part('partials/room-details-modal', null, [
+            'room_id' => $room_id,
+            'hotel_id' => $hotel_id,
+        ]);
+        // var_dump($room_id, $hotel_id);
+
+        wp_reset_postdata();
+
+        $html = ob_get_clean();
+
+        // Validate template rendered successfully
+        if (empty($html)) {
+            return wp_send_json_error([
+                'message' => 'Failed to render room details',
+                'code' => 'template_render_failed'
+            ], 500);
+        }
+
+        // ✅ STEP 4: Send successful response with modal HTML
+        return wp_send_json_success([
+            'html' => $html,
+        ]);
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        error_log('Error in niseko_load_room_details: ' . $e->getMessage());
+
+        return wp_send_json_error([
+            'message' => 'An error occurred while loading room details',
+            'code' => 'unexpected_error'
+        ], 500);
+    }
+}
+
+
+add_action('wp_ajax_load_roomboss_booking', 'kv_ajax_load_roomboss_booking');
+add_action('wp_ajax_nopriv_load_roomboss_booking', 'kv_ajax_load_roomboss_booking');
+
+/**
+ * Load available rooms for booking with guest details and date range
+ * 
+ * @return void Sends JSON response with room availability
+ */
+function kv_ajax_load_roomboss_booking()
+{
+    try {
+        // ✅ STEP 1: Validate and sanitize date inputs
+        $start_date = isset($_POST['start_date']) ? sanitize_text_field($_POST['start_date']) : '';
+        $end_date = isset($_POST['end_date']) ? sanitize_text_field($_POST['end_date']) : '';
+
+        if (empty($start_date) || empty($end_date)) {
+            return wp_send_json_error([
+                'message' => 'Check-in and check-out dates are required',
+                'code' => 'missing_dates'
+            ], 400);
+        }
+
+        // ✅ STEP 2: Validate date format (d/m/Y)
+        $checkInObj = DateTime::createFromFormat('d/m/Y', $start_date);
+        $checkOutObj = DateTime::createFromFormat('d/m/Y', $end_date);
+
+        if (!$checkInObj || !$checkOutObj) {
+            return wp_send_json_error([
+                'message' => 'Invalid date format. Please use DD/MM/YYYY',
+                'code' => 'invalid_date_format'
+            ], 400);
+        }
+
+        // ✅ STEP 3: Validate date range (checkout after checkin)
+        if ($checkOutObj <= $checkInObj) {
+            return wp_send_json_error([
+                'message' => 'Check-out date must be after check-in date',
+                'code' => 'invalid_date_range'
+            ], 400);
+        }
+
+        // ✅ STEP 4: Validate and calculate guest count
+        $adults = !empty($_POST['adults']) ? intval($_POST['adults']) : 1;
+        $children = !empty($_POST['children']) ? intval($_POST['children']) : 0;
+        $infants = !empty($_POST['infants']) ? intval($_POST['infants']) : 0;
+
+        $guests = $adults + $children + $infants;
+
+        // if ($guests < 1 || $guests > 20) {
+        //     return wp_send_json_error([
+        //         'message' => 'Total guests must be between 1 and 20',
+        //         'code' => 'invalid_guest_count'
+        //     ], 400);
+        // }
+
+        // ✅ STEP 5: Validate property ID
+        $property_id = !empty($_POST['property_id']) ? intval($_POST['property_id']) : 0;
+
+        if ($property_id < 1) {
+            return wp_send_json_error([
+                'message' => 'Valid property ID is required',
+                'code' => 'invalid_property_id'
+            ], 400);
+        }
+
+        // ✅ STEP 6: Convert date format for API (d/m/Y → d-M-Y)
+        $checkIn = $checkInObj->format('d-M-Y');
+        $checkOut = $checkOutObj->format('d-M-Y');
+
+        if (!$checkIn || !$checkOut) {
+            return wp_send_json_error([
+                'message' => 'Failed to process dates',
+                'code' => 'date_conversion_failed'
+            ], 500);
+        }
+
+        // ✅ STEP 7: Build cache key and check transient
+        $cache_key = "availability_{$property_id}_{$checkIn}_{$checkOut}";
+        $availability = get_transient($cache_key);
+
+        // ✅ STEP 8: Fetch from API if not cached
+        // if ($availability === false) {
+        if (true) {
+            $availability = kv_roomboss_get_availability(
+                (string) $property_id,
+                $checkIn,
+                $checkOut,
+                $guests
+            );
+            // pre($availability);
+
+            // Handle API errors
+            if (is_wp_error($availability)) {
+                return wp_send_json_error([
+                    'message' => 'Error retrieving availability: ' . $availability->get_error_message(),
+                    'code' => $availability->get_error_code()
+                ], 500);
+            }
+
+            // Cache the result for 10 minutes
+            if (!empty($availability)) {
+                set_transient($cache_key, $availability, 10 * MINUTE_IN_SECONDS);
+            }
+        }
+
+        // ✅ STEP 9: Validate availability response
+        if (empty($availability) || !is_array($availability)) {
+            return wp_send_json_success([
+                'html' => '<p>No rooms available for the selected dates. Please try different dates.</p>',
+                'available_bedroom_types' => [],
+            ]);
+        }
+
+        // ✅ STEP 10: Validate room data structure
+        if (empty($availability[0]['Units'][0]['Rooms'])) {
+            return wp_send_json_success([
+                'html' => '<p>No rooms available for the selected dates. Please try different dates.</p>',
+                'available_bedroom_types' => [],
+            ]);
+        }
+        // pre($availability);
+
+        $bs_rooms = $availability[0]['Units'][0]['Rooms'];
+
+        // ✅ STEP 11: Prepare room data
+        $grouped_rooms = kv_bs_group_rooms($bs_rooms);
+        $available_bedroom_types = get_available_bedrooms($bs_rooms);
+        $rate_plans = kv_roomboss_get_rate_plans($grouped_rooms);
+        $room_descriptions = kv_roomboss_get_room_descriptions($grouped_rooms);
+
+        // ✅ STEP 12: Render template
+        ob_start();
+        get_template_part(
+            'partials/room-booking-data',
+            null,
+            [
+                'property' => @$availability[0],
+                'grouped_rooms' => $grouped_rooms,
+                'property_id' => $property_id,
+                'rate_plans' => $rate_plans,
+                'room_descriptions' => $room_descriptions,
+                'dates' => [
+                    'check_in' => $start_date,
+                    'check_out' => $end_date,
+                    'guests' => $guests,
+                ],
+            ]
+        );
+        $html = ob_get_clean();
+
+        if (empty($html)) {
+            return wp_send_json_error([
+                'message' => 'Failed to render rooms template',
+                'code' => 'template_render_failed'
+            ], 500);
+        }
+
+        // ✅ STEP 13: Return success response
+        return wp_send_json_success([
+            'html' => $html,
+            'available_bedroom_types' => $available_bedroom_types,
+            'room_count' => count($grouped_rooms),
+        ]);
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        return wp_send_json_error([
+            'message' => 'An unexpected error occurred while loading rooms',
+            'code' => 'unexpected_error',
+            'details' => $e->getMessage()
+        ], 500);
+    }
+}
+
+/**
+ * Extract unique rate plans from grouped room data
+ *
+ * @param array $rooms Grouped rooms array from 
+ * ()
+ * @return array Associative array of rate plans keyed by ratePlanId
+ */
+function kv_roomboss_get_rate_plans(array $rooms = []): array
+{
+    $plans = [];
+
+    foreach ($rooms as $p) {
+        if (!is_array($p) || empty($p['ratePlanId'])) {
+            continue;
+        }
+
+        $plans[$p['ratePlanId']] = [
+            'name'        => $p['ratePlanName'] ?? '',
+            'description' => $p['descriptions'] ?? '',
+            'long_desc'   => $p['ratePlanLongDescription'] ?? '',
+        ];
+    }
+
+    return $plans;
+}
+
+function kv_roomboss_get_room_descriptions(array $rooms): array
+{
+    $desc = [];
+    foreach ($rooms as $room) {
+        if( !empty($room['RoomId']) ){
+            
+            $room_id = $room['RoomId'];
+            if (!empty($room['RoomDescription'])) {
+                $desc[$room_id] = $room['RoomDescription'];
+            }
+        }
+    }
+    return $desc;
+}
+
+/**
+ * Group available rooms by room name, collecting rate plans per room type
+ *
+ * @param array $availableRooms Flat array of room data from booking system API
+ * @return array Rooms grouped by RoomName, each with aggregated 'ratePlans' array
+ *
+ * 3-step flow:
+ * 1. Validate input
+ * 2. Group rooms by name and collect rate plans
+ * 3. Return grouped result
+ */
+function kv_bs_group_rooms(array $availableRooms): array
+{
+    // ✅ STEP 1: Validate input
+    if (empty($availableRooms)) {
+        return [];
+    }
+
+    // ✅ STEP 2: Group rooms by name and collect rate plans
+    $grouped = [];
+
+    foreach ($availableRooms as $r) {
+        if (!is_array($r) || empty($r['RoomName'])) {
+            continue;
+        }
+
+        $key = $r['RoomName'];
+
+        if (!isset($grouped[$key])) {
+            $grouped[$key] = $r;
+            $grouped[$key]['ratePlans'] = [];
+        }
+
+        if (!empty($r['ratePlan'])) {
+            $grouped[$key]['ratePlans'][] = $r['ratePlan'];
+        }
+    }
+
+    // ✅ STEP 3: Return grouped result
+    return $grouped;
+}
+
+/**
+ * Get room availability from Booking System API
+ * 
+ * @param string $propertyId Property ID to query
+ * @param string $checkIn Check-in date (format: d-M-Y)
+ * @param string $checkOut Check-out date (format: d-M-Y)
+ * @param int $guests Number of guests
+ * @return array|WP_Error Array of properties or WP_Error on failure
+ */
+function kv_roomboss_get_availability(
+    string $propertyId,
+    string $checkIn,
+    string $checkOut,
+    int $guests
+) {
+
+    try {
+        // ✅ STEP 1: Validate input parameters
+        if (empty($propertyId)) {
+            return new WP_Error(
+                'invalid_property_id',
+                'Property ID is required'
+            );
+        }
+
+        if (empty($checkIn) || empty($checkOut)) {
+            return new WP_Error(
+                'invalid_dates',
+                'Check-in and check-out dates are required'
+            );
+        }
+
+        // if ($guests < 1 || $guests > 20) {
+        //     return new WP_Error(
+        //         'invalid_guest_count',
+        //         'Guest count must be between 1 and 20'
+        //     );
+        // }
+
+        // ✅ STEP 2: Get property details
+        $resort_id = get_resort_id_by_property_id($propertyId);
+
+        if (empty($resort_id)) {
+            return new WP_Error(
+                'resort_not_found',
+                'Resort ID not found for property: ' . $propertyId
+            );
+        }
+
+        // ✅ STEP 3: Calculate duration
+        $duration = get_duration_from_date($checkIn, $checkOut);
+
+        if ($duration < 1) {
+            return new WP_Error(
+                'invalid_date_range',
+                'Stay duration must be at least 1 day'
+            );
+        }
+
+        // ✅ STEP 4: Build booking system API arguments
+        $args = [
+            'start_date' => $checkIn,
+            'resortId' => intval($resort_id),
+            'end_date' => $checkOut,
+            'channel' => true,
+            'bedBank' => true,
+            'offlineProperties' => false,
+            'duration' => $duration,
+            'maxPersons' => $guests,
+            'propertyIds' => [intval($propertyId)],
+            'adults' => [$guests],
+        ];
+        // pre($args, 0);
+
+        // ✅ STEP 5: Build API request
+        $url = KV_BOOKING_SYSTEM_BASE . '/api/quotation-filteration';
+        $bs_args = kv_booking_system_filter_args(KV_BS_authToken, $args);
+
+        if (!$bs_args) {
+            return new WP_Error(
+                'invalid_request_args',
+                'Failed to build booking system request arguments'
+            );
+        }
+
+        // ✅ STEP 6: Make API request
+        cf_log( $bs_args, 'bs_args' );
+        // pre($bs_args, 0);
+        $response = wp_remote_get($url, $bs_args);
+        // pre($response, 0);
+        
+        if (is_wp_error($response)) {
+            return new WP_Error(
+                'api_request_failed',
+                'Failed to connect to booking system: ' . $response->get_error_message()
+            );
+        }
+
+        // ✅ STEP 7: Validate HTTP response code
+        $http_code = wp_remote_retrieve_response_code($response);
+
+        if ($http_code !== 200) {
+            return new WP_Error(
+                'api_error',
+                'Booking system returned HTTP ' . $http_code
+            );
+        }
+
+        // ✅ STEP 8: Parse response body
+        $response_body = wp_remote_retrieve_body($response);
+        if (empty($response_body)) {
+            return new WP_Error(
+                'empty_response',
+                'Booking system returned empty response'
+            );
+        }
+
+        $body = json_decode($response_body, true);
+        // pre($body);
+
+        if (!is_array($body)) {
+            return new WP_Error(
+                'invalid_json',
+                'Booking system returned invalid JSON'
+            );
+        }
+
+        // ✅ STEP 9: Validate and extract properties
+        if (empty($body['properties']) || !is_array($body['properties'])) {
+            return [];
+        }
+
+        // ✅ STEP 10: Return properties array
+        return $body['properties'];
+
+    } catch (Exception $e) {
+        // ❌ Catch unexpected errors
+        return new WP_Error(
+            'unexpected_error',
+            'Error retrieving availability: ' . $e->getMessage()
+        );
+    }
+}
+
+/**
+ * Returns the HTML for the Expert Recommendation CTA banner.
+ * Styled to match the professional dark theme with brand colors.
+ */
+function kv_get_expert_recommendation_cta() {
+    // Using the background image provided in the existing code as a placeholder
+    
+    $html = '<div class="expert-recommendation-cta" style="grid-column: 1 / -1; width: 100%; margin: 40px 0; background-color: #00111F; color: #fff; border-radius: 12px; overflow: hidden; display: flex; align-items: center; min-height: 240px; position: relative; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.4); font-family: inherit;">';
+    
+        // Left Content Area
+        $html .= '<div style="flex: 1.5; padding: 45px 50px; z-index: 2; position: relative;">';
+            if(get_field('exp_acc_title', 'options')) {
+                $html .= '<h2 style="font-size: 32px; margin: 0 0 12px 0; color: #fff; font-weight: 700; line-height: 1.2;">'.get_field('exp_acc_title', 'options').'</h2>';
+            }
+            if(get_field('exp_acc_content', 'options')) {
+                $html .= '<p style="font-size: 17px; margin: 0 0 28px 0; color: rgba(255,255,255,0.8); max-width: 480px; line-height: 1.6;">'.get_field('exp_acc_content', 'options').'</p>';
+            }
+            if(get_field('exp_acc_cta', 'options')) {
+                $html .= '<a href="/contact-us/" class="expert-cta-button" style="display: inline-block; background-color: #193555; color: #FFF; padding: 15px 35px; border-radius: 25px; text-decoration: none; font-weight: 700; font-size: 15px; text-transform: capitalize; letter-spacing: 0.8px; transition: all 0.3s ease;">' . get_field('exp_acc_cta', 'options') . '</a>';
+            }
+        $html .= '</div>';// End of Left Content Area
+    
+    $html .= '</div>';// End of CTA Container
+    
+    // Adding a small hover effect for the button
+    $html .= '<style>.expert-cta-button:hover { background-color: #ff6e76 !important; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 204, 2, 0.3); }</style>';
+    
+    return $html;
+}

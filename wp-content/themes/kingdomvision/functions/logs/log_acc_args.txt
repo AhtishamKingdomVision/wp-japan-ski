@@ -1,0 +1,49 @@
+<pre>Array
+(
+    [start_date] => 03-Nov-2026
+    [end_date] => 07-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 03-Nov-2026
+    [end_date] => 07-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 03-Nov-2026
+    [end_date] => 07-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 03-Nov-2026
+    [end_date] => 07-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 03-Nov-2026
+    [end_date] => 07-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 03-Nov-2026
+    [end_date] => 07-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 04-Nov-2026
+    [end_date] => 28-Nov-2026
+    [duration] => 24
+)
+<br></pre>

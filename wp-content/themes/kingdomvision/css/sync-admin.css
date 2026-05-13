@@ -1,0 +1,107 @@
+/* ──────────────────────────────────────────────
+   Bulk Property Sync – Admin Page Styles
+   ────────────────────────────────────────────── */
+
+.kv-sync-wrap {
+    max-width: 960px;
+}
+
+/* ── Stat cards ── */
+.kv-sync-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.kv-sync-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px 24px;
+    min-width: 180px;
+    flex: 1 1 180px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kv-sync-card__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.kv-sync-card__value {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Value colours matching the screenshot */
+.kv-color-blue   { color: #2271b1; }
+.kv-color-green  { color: #00a32a; }
+.kv-color-yellow { color: #dba617; }
+
+/* ── Progress bar ── */
+.kv-sync-progress-wrap {
+    margin: 16px 0;
+}
+
+.kv-sync-progress-bar {
+    background: #e0e0e0;
+    border-radius: 4px;
+    height: 18px;
+    overflow: hidden;
+    max-width: 600px;
+}
+
+.kv-sync-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #2271b1;
+    border-radius: 4px;
+    transition: width .3s ease;
+}
+
+.kv-sync-progress-label {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #50575e;
+}
+
+/* ── Status message ── */
+.kv-sync-status {
+    font-size: 13px;
+    color: #50575e;
+    min-height: 20px;
+    margin: 0 0 12px;
+}
+
+/* ── Buttons ── */
+.kv-sync-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 32px;
+}
+
+.kv-sync-btn {
+    font-size: 14px;
+    padding: 6px 18px;
+    height: auto;
+}
+
+/* ── Settings section ── */
+.kv-sync-settings-wrap {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px 24px;
+    max-width: 600px;
+}
+
+.kv-sync-settings-wrap h2 {
+    margin-top: 0;
+    font-size: 16px;
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+    <meta charset="<?php bloginfo('charset'); ?>">
+    <title><?php wp_title(); ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <?php
+    $favicon = get_field('favicon_image', 'option');
+    if ($favicon) {
+        echo '<link rel="shortcut icon" href="' . $favicon . '" type="image/x-icon" />';
+    } else {
+        echo '<link rel="shortcut icon" href="' . get_stylesheet_directory_uri() . '/images/favicon.png" type="image/x-icon" />';
+    }
+
+    wp_head(); ?>
+</head>
+<body <?php body_class(); ?>>
+<div class="main_wrapper full-section">
+<?php
+// Main Wrapper
+$logo          = get_field('logo', 'option');
+$search        = get_field('search', 'option');
+$buttons       = get_field('header_buttons', 'option');
+$header_option = get_field('header_option');
+// if($header_option == 'colored'):
+    // echo '<div class="header_space"></div>';
+// endif;
+?>
+
+<header class="main-header full-section <?php echo $header_option; ?>" role="banner">
+    <div class="head-top">
+        <div class="container">
+
+            <!-- Site Logo -->
+            <div class="site_logo" aria-label="Go to homepage">
+                <a href="<?php echo esc_url( home_url('/') ); ?>">
+                    <?php 
+                        echo wp_get_attachment_image($logo, 'full', false, array('alt' => esc_attr( get_bloginfo('name') . ' logo' )));
+                    ?>
+                </a>
+            </div>
+
+            <!-- Search Form -->
+            <div class="site_search">
+                <?php if ( ! empty($search) ) : ?>
+                    <form method="get" id="searchform" action="<?php echo esc_url( home_url('/') ); ?>" role="search" aria-label="Site Search">
+                        <div class="search-text">
+                            <label for="search-input" class="screen-reader-text">Search resorts</label>
+                            <input type="text" placeholder="Search resorts..." value="<?php echo esc_attr( get_search_query() ); ?>" name="s" id="search-input" autocomplete="off" />
+                            <button type="submit" id="searchsubmit" aria-label="Submit Search"></button>
+                        </div>
+                    </form>
+                <?php endif; ?>
+            </div>
+
+            <!-- Header Buttons -->
+            <nav class="site_button" aria-label="Header Quick Links">
+                <ul>
+                    <?php if ( ! empty($buttons) && is_array($buttons) ) : ?>
+                        <?php foreach ( $buttons as $btn ) : ?>
+                            <?php
+                                $headlink    = $btn['headlink'] ?? [];
+                                $link_url    = esc_url( $headlink['url'] ?? '#' );
+                                $link_title  = esc_html( $headlink['title'] ?? '' );
+                                $link_target = esc_attr( $headlink['target'] ?? '_self' );
+                            ?>
+                            <li>
+                                <a class="btn" href="<?php echo $link_url; ?>" target="<?php echo $link_target; ?>">
+                                    <?php echo $link_title; ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+    <!-- navigation-wrappe -->
+    <div class="navigation-wrapper">
+        <div class="container">
+            <?php
+            if (has_nav_menu('main-menu')) {
+                wp_nav_menu(array(
+                    'theme_location' => 'main-menu',
+                    'menu_class' => 'main-menu'
+                ));
+            }
+            ?>
+        </div>
+    </div>
+    <?php 
+        get_template_part('mobile-header'); 
+    ?>
+</header>
+
+
+<?php
+
+    if (!is_front_page()){
+        echo '<div class="breadcrumb-wrapper full-section"
+            role="Breadcrumb" 
+            aria-label="Breadcrumb">';
+            echo '<div class="container">'; 
+                if ( function_exists('yoast_breadcrumb') ) {
+                    yoast_breadcrumb(
+                        '<nav class="yoast-breadcrumbs" aria-label="Breadcrumbs">',
+                        '</nav>'
+                    );
+                }
+            echo '</div>';
+        echo '</div>';
+    }
+
+?>
+

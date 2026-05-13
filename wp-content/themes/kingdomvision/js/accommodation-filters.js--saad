@@ -1,0 +1,819 @@
+/**
+ * Accommodation Filters Manager
+ * Modular system for managing accommodation search, filtering, sorting, and pagination
+ * Features: Error handling, AJAX loading states, filter management, date picking
+ */
+
+const AccommodationFilters = (function() {
+    'use strict';
+
+    // ============================================================================
+    // CONFIGURATION
+    // ============================================================================
+    const CONFIG = {
+        ajax: {
+            // url: '<?php echo admin_url('admin-ajax.php'); ?>',
+            url: kv_object.ajaxurl,
+            action: 'niseko_search',
+            timeout: 30000
+        },
+        selectors: {
+            searchForm: '#accom-search-form',
+            searchResults: '#accom-search-results',
+            filterPanel: '#filter-panel',
+            loadMore: '#load-more',
+            appliedFilters: '.filter-tabs',
+            priceMin: '#price_min',
+            priceMax: '#price_max',
+            roomsCount: '#rooms-count',
+            propertiesCount: '#properties-count',
+            sortBy: '#sort-by'
+        },
+        defaults: {
+            perPage: 6,
+            priceMin: 0,
+            priceMax: 1000000,
+            priceGap: 1000,
+            loadingText: 'Loading...',
+            loadMoreText: 'Load More',
+            loadingMoreText: 'Loading…'
+        },
+        storage: {
+            hotelSearch: 'niseko_hotel_search',
+            checkin: 'niseko_checkin',
+            checkout: 'niseko_checkout'
+        },
+        baseAreas: {
+            niseko: {
+                izumikyo: "Izumikyo",
+                kabayama: "Kabayama",
+                "niseko-village": "Niseko Village / Higashiyama",
+                hanazono: "Hanazono",
+                "hirafu-village": "Hirafu Village",
+            },
+            hakuba: {
+                "happo-village": "Happo One Village",
+                wadano: "Happo One Wadano no Mori",
+                echoland: "Echoland",
+                misorano: "Misorano",
+                hakuba47: "Hakuba 47",
+                "hakuba-station": "Hakuba Station",
+                goryu: "Goryu",
+                iwatake: "Iwatake",
+                tsugaike: "Tsugaike",
+                norikura: "Norikura",
+                cortina: "Cortina",
+                ochikura: "Ochikura",
+            },
+            furano: {
+                kitanomine: "Kitanomine Zone",
+                furano: "Furano Zone",
+            },
+        }
+    };
+
+    // ============================================================================
+    // STATE & CACHE
+    // ============================================================================
+    const State = {
+        isSearching: false,
+        priceChanged: false,
+        currentPage: 1,
+
+        cache: {
+            $form: null,
+            $results: null,
+            $loadMore: null,
+            $priceMin: null,
+            $priceMax: null,
+            $roomsCount: null,
+            $propertiesCount: null,
+        },
+
+        init: function() {
+            this.cache.$form = jQuery(CONFIG.selectors.searchForm);
+            this.cache.$results = jQuery(CONFIG.selectors.searchResults);
+            this.cache.$loadMore = jQuery(CONFIG.selectors.loadMore);
+            this.cache.$priceMin = jQuery(CONFIG.selectors.priceMin);
+            this.cache.$priceMax = jQuery(CONFIG.selectors.priceMax);
+            this.cache.$roomsCount = jQuery(CONFIG.selectors.roomsCount);
+            this.cache.$propertiesCount = jQuery(CONFIG.selectors.propertiesCount);
+
+            return Object.values(this.cache).every(el => el && el.length > 0);
+        }
+    };
+
+    // ============================================================================
+    // UI UTILITIES - Loading states and error messages
+    // ============================================================================
+    const UI = {
+        showLoader: function(target = State.cache.$results) {
+            if (!target || !target.length) return;
+            target.html(`
+                <div class="accom-loader">
+                    <div class="spinner"></div>
+                    <p>${CONFIG.defaults.loadingText}</p>
+                </div>
+            `);
+        },
+
+        hideLoader: function() {
+            jQuery('.accom-loader').remove();
+        },
+
+        showError: function(message = 'An error occurred while loading accommodation') {
+            State.cache.$results.html(`
+                <div class="accom-error-message">
+                    <i class="fa-solid fa-exclamation-circle"></i>
+                    <p>${message}</p>
+                </div>
+            `);
+        },
+
+        showNoResults: function() {
+            State.cache.$results.html(`
+                <p class="no-results">No accommodation found. Try adjusting your filters.</p>
+            `);
+        },
+
+        setLoadMoreState: function(isLoading, currentPage = 1) {
+            const $btn = State.cache.$loadMore;
+            if (!$btn || !$btn.length) return;
+
+            if (isLoading) {
+                $btn.prop('disabled', true).addClass('loading').text(CONFIG.defaults.loadingMoreText);
+            } else {
+                $btn.prop('disabled', false).removeClass('loading').text(CONFIG.defaults.loadMoreText);
+                $btn.data('page', currentPage);
+            }
+        },
+
+        updateCounts: function(roomCount, propertyCount) {
+            State.cache.$roomsCount.text(roomCount || 0);
+            State.cache.$propertiesCount.text(propertyCount || 0);
+        },
+
+        resetCounts: function() {
+            this.updateCounts(0, 0);
+        }
+    };
+
+    // ============================================================================
+    // FILTER DATA COLLECTION
+    // ============================================================================
+    const FilterData = {
+        collect: function() {
+            return {
+                checkin: jQuery('input[name="checkin"]').val() || '',
+                checkout: jQuery('input[name="checkout"]').val() || '',
+                resort: jQuery('input[name="resort"]:checked').val() || '',
+                guests: jQuery('select[name="guests"]').val() || '1',
+                bedrooms: this.getCheckboxValues('bedrooms[]'),
+                areas: this.getCheckboxValues('area[]'),
+                accommodation_type: this.getCheckboxValues('type[]'),
+                ski_in_ski_out: jQuery('input[name="ski_in_ski_out"]:checked').val() || '',
+                onsen: jQuery('input[name="on-site"]:checked').val() || '',
+                booking: jQuery('input[name="booking"]:checked').val() || '',
+                discount: jQuery('input[name="discount"]:checked').val() || '',
+                sort: jQuery(CONFIG.selectors.sortBy).val() || '',
+                price_min: State.priceChanged ? State.cache.$priceMin.val() : null,
+                price_max: State.priceChanged ? State.cache.$priceMax.val() : null,
+            };
+        },
+
+        getCheckboxValues: function(name) {
+            const values = [];
+            jQuery(`input[name="${name}"]:checked`).each(function() {
+                values.push(jQuery(this).val());
+            });
+            return values;
+        },
+
+        saveDatesTolocalStorage: function(checkin, checkout) {
+            if (checkin && checkout) {
+                localStorage.setItem(CONFIG.storage.checkin, checkin);
+                localStorage.setItem(CONFIG.storage.checkout, checkout);
+            }
+        }
+    };
+
+    // ============================================================================
+    // AJAX SEARCH - With error handling and timeout
+    // ============================================================================
+    const Search = {
+        run: function(page = 1, append = false) {
+            if (State.isSearching) {
+                console.warn('Search already in progress');
+                return;
+            }
+
+            State.isSearching = true;
+            State.currentPage = page;
+
+            const filterData = FilterData.collect();
+            const perPage = State.cache.$form.attr('per_page') || CONFIG.defaults.perPage;
+
+            // Save dates
+            FilterData.saveDatesTolocalStorage(filterData.checkin, filterData.checkout);
+
+            // Show loader
+            if (!append) {
+                UI.resetCounts();
+                UI.showLoader();
+            }
+
+            const ajaxData = {
+                action: CONFIG.ajax.action,
+                page: page,
+                per_page: perPage,
+                location: jQuery('#search_acc').val() || '',
+                // category_slug: jQuery('input[name="category_slug"]').val() || '',
+                property_id: jQuery('#search_acc').data("val") || '0',
+                ...filterData,
+                hotel_search: localStorage.getItem(CONFIG.storage.hotelSearch) === 'true' ? 1 : 0,
+            };
+
+            jQuery.ajax({
+                url: CONFIG.ajax.url,
+                type: 'POST',
+                data: ajaxData,
+                timeout: CONFIG.ajax.timeout,
+                beforeSend: function() {
+                    if (!append) {
+                        UI.showLoader();
+                    }
+                },
+                success: function(res) {
+                    if (res.success && res.data) {
+                        Search.handleSuccess(res.data, append, page);
+                    } else {
+                        Search.handleError('Invalid response from server');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    let errorMsg = 'Failed to load accommodation';
+
+                    if (status === 'timeout') {
+                        errorMsg = 'Request timed out. Please try again.';
+                    } else if (xhr.status === 0) {
+                        errorMsg = 'Network error. Please check your connection.';
+                    } else if (xhr.status >= 500) {
+                        errorMsg = 'Server error. Please try again later.';
+                    }
+
+                    Search.handleError(errorMsg, error);
+                },
+                complete: function() {
+                    State.isSearching = false;
+                    UI.hideLoader();
+                }
+            });
+        },
+
+        handleSuccess: function(data, append, page) {
+            if (!data.html) {
+                UI.showNoResults();
+                State.cache.$loadMore.hide();
+                return;
+            }
+
+            if (append) {
+                State.cache.$results.append(data.html);
+            } else {
+                State.cache.$results.html(data.html);
+            }
+
+            UI.updateCounts(data.room_count || 0, data.count || 0);
+
+            // Update Load More button
+            if (data.has_more) {
+                UI.setLoadMoreState(false, page);
+                State.cache.$loadMore.show();
+            } else {
+                State.cache.$loadMore.hide().data('page', 1);
+            }
+        },
+
+        handleError: function(message, error) {
+            console.error('AJAX Search Error:', error || message);
+            UI.showError(message);
+            State.cache.$loadMore.hide();
+        }
+    };
+
+    // ============================================================================
+    // PRICE RANGE HANDLER
+    // ============================================================================
+    const PriceRange = {
+        init: function() {
+            const $priceMin = State.cache.$priceMin;
+            const $priceMax = State.cache.$priceMax;
+
+            if (!$priceMin.length || !$priceMax.length) return;
+
+            $priceMin.on('input change', this.update.bind(this));
+            $priceMax.on('input change', this.update.bind(this));
+        },
+
+        update: function() {
+            State.priceChanged = true;
+
+            let min = parseInt(State.cache.$priceMin.val(), 10);
+            let max = parseInt(State.cache.$priceMax.val(), 10);
+
+            // Clamp values
+            if (min > max - CONFIG.defaults.priceGap) {
+                min = max - CONFIG.defaults.priceGap;
+                State.cache.$priceMin.val(min);
+            }
+
+            if (max < min + CONFIG.defaults.priceGap) {
+                max = min + CONFIG.defaults.priceGap;
+                State.cache.$priceMax.val(max);
+            }
+
+            // Update display
+            jQuery('#price-min-label').text(min.toLocaleString('ja-JP'));
+            jQuery('#price-max-label').text(max.toLocaleString('ja-JP'));
+        }
+    };
+
+    // ============================================================================
+    // FILTER MANAGEMENT
+    // ============================================================================
+    const Filters = {
+        updateBaseArea: function(resort) {
+            const container = jQuery('.filter-accordion.base_area .accordion-content');
+            if (!container.length || !CONFIG.baseAreas[resort]) return;
+
+            container.html('<div class="checkbox-list"></div>');
+            const list = container.find('.checkbox-list');
+
+            Object.entries(CONFIG.baseAreas[resort]).forEach(([slug, label]) => {
+                list.append(`
+                    <div class="ch-item">
+                        <input type="checkbox" name="area[]" data-type="${slug}" id="area-${slug}" value="${label}">
+                        <label for="area-${slug}">${label}</label>
+                    </div>
+                `);
+            });
+        },
+
+        upsertSelected: function(type, value, label, single = false) {
+            const container = jQuery(CONFIG.selectors.appliedFilters);
+            const template = jQuery('#selected-filter-template .filter');
+
+            if (!container.length || !template.length) return;
+
+            let filterEl;
+
+            if (single) {
+                filterEl = container.find(`.filter-tab[data-type="${type}"]`).closest('.filter');
+            } else {
+                filterEl = container.find(`.filter-tab[data-type="${type}"][data-value="${value}"]`).closest('.filter');
+            }
+
+            if (!filterEl.length) {
+                filterEl = template.clone(true);
+                const resetTab = container.find('.filter-tab.reset').closest('.filter');
+
+                if (resetTab.length) {
+                    filterEl.insertBefore(resetTab);
+                } else {
+                    container.append(filterEl);
+                }
+            }
+
+            const tab = filterEl.find('.filter-tab');
+            tab.data('type', type);
+            if (value !== undefined && value !== null) {
+                tab.data('value', value);
+            }
+            tab.text(label);
+
+            this.updateResetVisibility();
+        },
+
+        removeSelected: function(type, value = null) {
+            const container = jQuery(CONFIG.selectors.appliedFilters);
+            const selector = value !== null
+                ? `.filter-tab[data-type="${type}"][data-value="${value}"]`
+                : `.filter-tab[data-type="${type}"]`;
+
+            container.find(selector).closest('.filter').remove();
+            this.updateResetVisibility();
+        },
+
+        updateResetVisibility: function() {
+            const container = jQuery(CONFIG.selectors.appliedFilters);
+            const resetFilter = container.find('.filter-tab.reset').closest('.filter');
+            const activeFilters = container.find('.filter:has(.close_filter)');
+
+            if (resetFilter.length) {
+                resetFilter.toggle(activeFilters.length > 0);
+            }
+        },
+
+        reset: function() {
+            localStorage.setItem('apply-filters', 'false');
+
+            // Clear all filters
+            jQuery(`${CONFIG.selectors.appliedFilters} .close_filter`).trigger('click');
+
+            jQuery(`${CONFIG.selectors.appliedFilters} .filter`).hide();
+
+            localStorage.setItem('apply-filters', 'true');
+            localStorage.removeItem(CONFIG.storage.checkin);
+            localStorage.removeItem(CONFIG.storage.checkout);
+
+            jQuery('input[name="checkin"], input[name="checkout"]').val('');
+            jQuery('#apply-filters').trigger('click');
+        }
+    };
+
+    // ============================================================================
+    // EVENT HANDLERS
+    // ============================================================================
+    const Events = {
+        init: function() {
+            // Form submission
+            State.cache.$form.on('submit', this.onFormSubmit.bind(this));
+
+            // Apply filters
+            jQuery('#apply-filters').on('click', this.onApplyFilters.bind(this));
+
+            // Clear filters
+            jQuery('#clear-filters').on('click', this.onClearFilters.bind(this));
+
+            // Close filter panel on outside click
+            jQuery(document).on('click', this.onDocumentClick.bind(this));
+
+            // Filter panel open/close
+            jQuery('#open-filter').on('click', this.onOpenFilter.bind(this));
+            jQuery('#close-filter').on('click', this.onCloseFilter.bind(this));
+
+            // Accordion
+            jQuery(document).on('click', '.accordion-header', this.onAccordionClick.bind(this));
+
+            // Load more
+            State.cache.$loadMore.on('click', this.onLoadMore.bind(this));
+
+            // Filter tab close
+            jQuery(document).on('click', '.close_filter', this.onRemoveFilterTab.bind(this));
+
+            // Resort change
+            jQuery('.ch-item input[name="resort"]').on('change', this.onResortChange.bind(this));
+
+            // Checkbox changes
+            jQuery(document).on('change', '.ch-item input', this.onFilterInputChange.bind(this));
+
+            // Sort
+            jQuery('#sortTrigger').on('click', this.onSortTrigger.bind(this));
+            jQuery('#sortMenu a').on('click', this.onSortOption.bind(this));
+
+            // Accommodation name search autocomplete
+            jQuery(document).on('keyup', '.property-search #search_acc', function(e) {
+                console.log('key up');
+                let form = jQuery('#accom-search-form'),
+                    cat_slug = form.attr('data-cat'),
+                    accomodation_search = jQuery(this).parents('.accordion-content'),
+                    dropdown_results = accomodation_search.find('.dropdown_results'),
+                    ajax_url = kv_object.ajaxurl;
+
+                    console.log( accomodation_search );
+                    console.log( dropdown_results );
+
+                jQuery.ajax({
+                    url: ajax_url,
+                    method: "POST",
+                    data: {
+                        action: "hz_get_results_by_name",
+                        name: jQuery(this).val(),
+                        cat_slug: cat_slug,
+                    },
+                    success: function(response) {
+                        let res = response.data,
+                            data = res.data,
+                            res_properties = data.properties,
+                            res_destinations = data.destinations;
+
+                        if (res_properties.length > 0) {
+                            dropdown_results.show();
+                            dropdown_results.find('ul').html(res_properties);
+                        } else {
+                            dropdown_results.hide();
+                        }
+                    },
+                    error: function(jqXHR, exception) {
+                        var msg = '';
+                        if (jqXHR.status === 0) {
+                            msg = 'Not connect.\n Verify Network.';
+                        } else if (jqXHR.status == 404) {
+                            msg = 'Requested page not found. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msg = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msg = 'Requested JSON parse failed.';
+                        } else if (exception === 'timeout') {
+                            msg = 'Time out error.';
+                        } else if (exception === 'abort') {
+                            msg = 'Ajax request aborted.';
+                        } else {
+                            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                        }
+                        console.log(msg);
+                    },
+                });
+            });
+
+            // Handle selection from autocomplete results
+            jQuery(document).on('click', '.properties .property', function(e) {
+                let tid = jQuery(this).data('property-id') ?? 0,
+                    dropdown_results = jQuery(this).parents('.dropdown_results'),
+                    loc_name_txt = jQuery(this).text(),
+                    search_acc = jQuery('#search_acc');
+
+                search_acc.val(loc_name_txt);
+                search_acc.attr('data-val', tid);
+                jQuery('#type_acc').attr('value', 'hotel');
+                dropdown_results.fadeOut(200);
+            });
+        },
+
+        onFormSubmit: function(e) {
+            e.preventDefault();
+            localStorage.setItem(CONFIG.storage.hotelSearch, 'true');
+            Search.run(1, false);
+        },
+
+        onApplyFilters: function() {
+            jQuery(CONFIG.selectors.filterPanel).removeClass('active');
+            Search.run(1, false);
+        },
+
+        onClearFilters: function() {
+            Filters.reset();
+        },
+
+        onDocumentClick: function(e) {
+            const $panel = jQuery(CONFIG.selectors.filterPanel);
+            const isClickInsidePanel = jQuery(e.target).closest($panel).length > 0;
+            const isClickOnOpenBtn = jQuery(e.target).closest('#open-filter').length > 0;
+
+            if (!isClickInsidePanel && !isClickOnOpenBtn) {
+                $panel.removeClass('active');
+            }
+        },
+
+        onOpenFilter: function() {
+            jQuery(CONFIG.selectors.filterPanel).addClass('active');
+        },
+
+        onCloseFilter: function() {
+            jQuery(CONFIG.selectors.filterPanel).removeClass('active');
+        },
+
+        onAccordionClick: function(e) {
+            e.preventDefault();
+            const $accordion = jQuery(e.target).closest('.filter-accordion');
+            jQuery('.filter-accordion').not($accordion).removeClass('active');
+            $accordion.toggleClass('active');
+        },
+
+        onLoadMore: function() {
+            const nextPage = State.cache.$loadMore.data('page') + 1;
+            UI.setLoadMoreState(true);
+            Search.run(nextPage, true);
+        },
+
+        onRemoveFilterTab: function(e) {
+            const $filter = jQuery(e.target).closest('.filter');
+            const $tab = $filter.find('.filter-tab');
+            const type = $tab.data('type');
+            const value = $tab.data('value');
+            const apply = localStorage.getItem('apply-filters') ?? localStorage.setItem('apply-filters', 'true');
+
+            if (type === 'price') {
+                const $priceMin = State.cache.$priceMin;
+                const $priceMax = State.cache.$priceMax;
+                const defMin = parseInt($priceMin.attr('min'));
+                const defMax = parseInt($priceMax.attr('max'));
+
+                $priceMin.val(defMin);
+                $priceMax.val(defMax);
+                jQuery('#price-min-label').text(defMin);
+                jQuery('#price-max-label').text(defMax);
+                State.priceChanged = false;
+            } else if (type === 'bedrooms') {
+                jQuery('input[name="bedrooms[]"]').prop('checked', false);
+            } else {
+                jQuery(`input[data-type="${type}"][value="${value}"]`).prop('checked', false);
+            }
+
+            $filter.remove();
+
+            if (apply === 'true') {
+                setTimeout(() => jQuery('#apply-filters').trigger('click'), 200);
+            }
+        },
+
+        onResortChange: function(e) {
+            const $input = jQuery(e.target);
+            const resort = $input.siblings('label').text().trim().toLowerCase();
+            Filters.updateBaseArea(resort);
+            jQuery('.filter-accordion.base_area').show();
+        },
+
+        onFilterInputChange: function(e) {
+            const $input = jQuery(e.target);
+            const type = $input.data('type');
+            const value = $input.val();
+            const label = $input.siblings('label').text().trim();
+            const isRadio = $input.attr('type') === 'radio';
+
+            if (type && type.includes('bedrooms')) return;
+
+            if ($input.is(':checked')) {
+                Filters.upsertSelected(type, value, label, isRadio);
+            } else if (!isRadio) {
+                Filters.removeSelected(type, value);
+            }
+        },
+
+        onSortTrigger: function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            jQuery('#sortDropdown').toggleClass('open');
+        },
+
+        onSortOption: function(e) {
+            e.preventDefault();
+            const $option = jQuery(e.target);
+            const value = $option.data('value');
+
+            jQuery(CONFIG.selectors.sortBy).val(value);
+            jQuery('#sortDropdown').removeClass('open');
+            Search.run(1, false);
+        }
+    };
+
+    // ============================================================================
+    // DATE PICKER - Wrapper for dateDropper plugin
+    // ============================================================================
+    const DatePicker = {
+        init: function() {
+            if (typeof jQuery.fn.dateDropper !== 'function') {
+                console.warn('dateDropper plugin not loaded');
+                return;
+            }
+
+            if (typeof kv_object === 'undefined') {
+                console.warn('kv_object not available for DatePicker');
+                return;
+            }
+
+            this.initCheckIn();
+            this.initCheckOut();
+            this.initCloseOnDateClick();
+        },
+
+        initCheckIn: function() {
+            const $checkin = jQuery('#sc-check-in');
+            if (!$checkin.length) return;
+
+            $checkin
+                .addClass('dateDropper')
+                .dateDropper({
+                    large: 1,
+                    largeDefault: 1,
+                    preset: false,
+                    minDate: kv_object.check_start_date,
+                    maxDate: kv_object.check_end_date,
+                    format: 'd-M-Y',
+                    eventSelector: 'click',
+                    onChange: this.onCheckInChange.bind(this)
+                });
+        },
+
+        initCheckOut: function() {
+            const $checkout = jQuery('#sc-check-out');
+            if (!$checkout.length) return;
+
+            $checkout
+                .prop('disabled', true)
+                .addClass('dateDropper')
+                .dateDropper({
+                    large: 1,
+                    largeDefault: 1,
+                    minDate: kv_object.check_start_date,
+                    maxDate: kv_object.check_end_date,
+                    format: 'd-M-Y',
+                    eventSelector: 'click',
+                    onChange: this.onCheckOutChange.bind(this)
+                });
+        },
+
+        onCheckInChange: function(res) {
+            this.injectHelperText();
+
+            const dt = new Date(res.date.Y, res.date.m - 1, res.date.d);
+
+            if (kv_object.check_min_days_option === '1' && kv_object.check_min_days) {
+                dt.setDate(dt.getDate() + parseInt(kv_object.check_min_days, 10));
+            }
+
+            const day = ('0' + dt.getDate()).slice(-2);
+            const month = dt.toLocaleString('en-US', { month: 'short' });
+            const year = dt.getFullYear();
+            const minDate = day + '-' + month + '-' + year;
+
+            jQuery('#sc-check-out')
+                .prop('disabled', false)
+                .dateDropper('destroy')
+                .dateDropper({
+                    large: 1,
+                    largeDefault: 1,
+                    minDate: minDate,
+                    maxDate: kv_object.check_end_date,
+                    format: 'd-M-Y',
+                    eventSelector: 'click',
+                    onChange: this.onCheckOutChange.bind(this)
+                });
+        },
+
+        onCheckOutChange: function() {
+            this.injectHelperText();
+        },
+
+        injectHelperText: function() {
+            if (!kv_object.date_dropper_content) return;
+
+            const $picker = jQuery('.datedropper .picker .pick-lg');
+            if ($picker.length && !$picker.find('.kv-text').length) {
+                $picker.prepend(`<div class="kv-text">${kv_object.date_dropper_content}</div>`);
+            }
+        },
+
+        initCloseOnDateClick: function() {
+            jQuery(document).on('mousedown', '.pick-lg li.pick-v', () => {
+                jQuery('#sc-check-in').dateDropper('hide');
+                jQuery('#sc-check-out').dateDropper('hide');
+            });
+        }
+    };
+
+    // ============================================================================
+    // PUBLIC API
+    // ============================================================================
+    return {
+        init: function() {
+            localStorage.setItem(CONFIG.storage.hotelSearch, 'false');
+
+            if (!State.init()) {
+                console.error('AccommodationFilters: Required DOM elements not found');
+                return false;
+            }
+
+            PriceRange.init();
+            Events.init();
+            DatePicker.init();
+
+            // Initialize from current filter state
+            this.initializeFromInputs();
+
+            return true;
+        },
+
+        initializeFromInputs: function() {
+            const resort = jQuery('.ch-item input[name="resort"]:checked').siblings('label').text().trim().toLowerCase();
+            if (resort) {
+                Filters.updateBaseArea(resort);
+            }
+
+            // Trigger initial search if dates are set
+            const checkin = jQuery('input[name="checkin"]').val();
+            const checkout = jQuery('input[name="checkout"]').val();
+
+            if (checkin && checkout) {
+                Search.run(1);
+            }
+        },
+
+        search: function(page = 1, append = false) {
+            return Search.run(page, append);
+        },
+
+        reset: function() {
+            Filters.reset();
+        }
+    };
+})();
+
+// ============================================================================
+// AUTO-INIT ON DOM READY
+// ============================================================================
+jQuery(document).ready(function() {
+    if (jQuery('#accom-search-form').length) {
+        AccommodationFilters.init();
+    }
+});

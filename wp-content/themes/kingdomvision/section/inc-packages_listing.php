@@ -1,0 +1,436 @@
+<?php
+// ============================================================================
+// LOAD CONFIGURATION & HELPER FUNCTIONS
+// ============================================================================
+require_once get_template_directory() . '/section/accommodation-config.php';
+
+// ============================================================================
+// INITIALIZE SETTINGS
+// ============================================================================
+$main_title    = $section['main_title'] ?: 'Browse Accommodation';
+$content       = $section['content'] ?: '';
+$category      = $section['select_category'] ?? null;
+$product_count = (int) ($section['product_count'] ?: 6);
+
+// Parse category info
+$category_info = parse_accommodation_category($category);
+$category_id   = $category_info['id'];
+$category_slug = $category_info['slug'];
+$category_name = $category_info['name'];
+
+// Build tax query
+$tax_query = [];
+if ($category_id && is_int( $category_id )) {
+    $tax_query[] = [
+        'taxonomy' => 'accommodation-cat',
+        'field'    => 'term_id',
+        'terms'    => $category_id,
+    ];
+}
+
+// Get URL path info for scoped filters
+$path_segments = get_url_path_segments();
+[$resort, $acc, $area] = array_pad($path_segments, 3, null);
+
+// Get filter input values
+$filter_inputs = get_filter_input_values();
+
+$absolute_url = home_url(add_query_arg([], $wp->request));
+$relative_url = wp_make_link_relative($absolute_url);
+$path_segments = explode('/', $relative_url); // Split by slashes
+$path_segments = array_filter($path_segments);
+
+// Get the last 3 elements. If fewer than 3, get all of them.
+$last_three = array_slice($path_segments, -3);
+@[$resort, $acc, $area] = $last_three;
+
+// Get all options for filters
+$resort_terms   = get_resort_terms();
+$base_areas     = get_accommodation_base_areas( $resort.'-accommodation' );
+$bedroom_options = get_accommodation_bedroom_options();
+$area_options   = get_accommodation_area_options();
+$type_options   = get_accommodation_type_options();
+
+// Apply defaults
+$selected_bedrooms = $filter_inputs['bedrooms'];
+$selected_areas    = $filter_inputs['areas'];
+$selected_resort   = $filter_inputs['resort'];
+$selected_types    = $filter_inputs['types'];
+$price_min         = $filter_inputs['price_min'];
+$price_max         = $filter_inputs['price_max'];
+
+    $price_max = isset($_POST['price_max']) && $_POST['price_max'] !== ''
+    ? (int) $_POST['price_max']
+        : 1000000; // ✅ up to ¥1,000,000
+
+    $slug = get_post_field( 'post_name');
+
+    $url = wp_make_link_relative(get_permalink());
+
+    $args = [
+        'post_type'      => 'accommodation',
+        'post_status'    => 'publish',
+        'orderby'        => 'title', // Order by post title
+        'fields'         => 'ids',   // Only get post IDs
+        'order'          => 'ASC',
+        'posts_per_page' => $product_count,
+        'tax_query'      => [
+            // [
+            //     'taxonomy' => 'accommodation-cat',
+            //     'field'    => 'slug',   // you can also use 'term_id'
+            //     'terms'    => $category_slug,
+            // ],
+            $tax_query,
+        ],
+    ];
+
+    $acc_ids = get_posts($args);
+    echo '<section ' . SectionAttributes($section, 'full-section package_listing') . '>';
+
+    ?>
+        <div class="container">
+            <div class="accom-search-wrapper">
+
+                <h2><?php echo esc_html($main_title); ?></h2>
+                <?php
+                if ($content) {
+                    echo '<div class="desc">' . $content . '</div>';
+                }
+                ?>
+                <div class="accom-filters">
+                    <!-- SEARCH FORM -->
+                    <form id="accom-search-form" data-cat="<?php echo $category_slug ?>" per_page="<?php echo $product_count ?>">
+                        <!-- TOOLBAR -->
+                        <div class="results-toolbar">
+
+                            <span class="results-count">
+                                <strong id="rooms-count">0</strong>
+                                stays across <span id="properties-count"> 0</span> properties
+                            </span>
+
+                            <div id="selected-filter-template" style="display:none;">
+                                <span class="filter">
+                                    <a href="javascript:void(0);" 
+                                    class="filter-tab active"
+                                    data-type=""
+                                    data-value=""></a>
+                                    <span class="close_filter"></span>
+                                </span>
+                            </div>
+
+                            <div class="toolbar-right">
+                                <a href="javascript:;" class="toolbar-btn" id="open-filter">Filter by</a>
+                                <a href="javascript:void(0);" class="toolbar-btn sort-trigger" id="sortTrigger">Sort by</a>
+
+                                <div class="sort-dropdown" id="sortDropdown">
+
+                                    <div class="sort-menu" id="sortMenu">
+                                        <a href="#" data-value="">Sort by</a>
+                                        <a href="#" data-value="price_asc">Price (Low → High)</a>
+                                        <a href="#" data-value="price_desc">Price (High → Low)</a>
+                                        <a href="#" data-value="title_asc">Name (A → Z)</a>
+                                        <a href="#" data-value="title_desc">Name (Z → A)</a>
+                                        <?php if (@$_GET['sort_date'] == 'desc'): ?>                                        
+                                            <a href="#" data-value="date_desc">Date desc</a>
+                                        <?php endif ?>
+                                    </div>
+
+                                    <!-- hidden input used by AJAX -->
+                                    <input type="hidden" id="sort-by" value="">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                    <div class="filter-tabs">
+
+                        <span class="filter" style="display:none;">
+                            <a type="button" class="filter-tab active reset">Reset</a>
+                        </span>
+
+                    </div>
+                </div>
+                <!-- RESULTS -->
+                <div id="accom-search-results">
+                </div>
+
+                <div class="load-more-wrap">
+                    <button
+                    type="button"
+                    id="load-more"
+                    class="load-more-btn"
+                    data-page="1"
+                    style="display:none;"">
+                    Load More
+                </button>
+            </div>
+
+        </div>
+        </div>
+    </section> <!-- package_listing -->
+    <div id="filter-panel" class="filter-panel">
+
+        <!-- HEADER -->
+        <div class="filter-header">
+            <h3>Filters</h3>
+            <button type="button" id="close-filter">Close</button>
+        </div>
+
+        <div class="filter-body">
+
+            <?php $display = should_display_resort_filter($resort) ? 'block' : 'none'; ?>
+            <!-- RESORT -->
+            <div class="filter-accordion resort active" style="display:<?php echo $display ?>">
+                <h3 class="accordion-header">
+                    Resort
+                    <span class="accordion-icon"></span>
+                </h3>
+
+                <div class="accordion-content">
+                    <div class="checkbox-grid">
+
+                        <!-- All Resorts option -->
+                        <div class="ch-item">
+                            <input type="radio"
+                            name="resort"
+                            data-type="resort"
+                            id="resort-all"
+                            value="">
+                            <label for="resort-all">
+                                All Resorts
+                            </label>
+                        </div>
+
+                        <?php foreach ($resort_terms as $term) :
+                            $resort_slug = str_replace('-accommodation', '', $term->slug) ?>
+                            <div class="ch-item">
+                                <input type="radio"
+                                name="resort"
+                                data-type="resort"
+                                id="resort-<?php echo esc_attr($term->slug); ?>"
+                                value="<?php echo esc_attr($term->slug); ?>"
+                                <?php checked($selected_resort, $resort_slug, true); ?>>
+                                <label for="resort-<?php echo esc_attr($term->slug); ?>">
+                                    <?php echo str_replace(ucwords(' accommodation'), '', esc_html($term->name)); ?>
+                                </label>
+                            </div>
+                        <?php endforeach; ?>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROPERTY -->
+            <div class="filter-accordion resort active">
+                <h3 class="accordion-header">
+                     Property
+                    <span class="accordion-icon"></span>
+                </h3>
+                <div class="accordion-content">
+                    <!-- <div class="checkbox-grid"> -->
+                        <!-- All Resorts option -->
+                        <div class="property-search">
+                            <input type="text" name="location" id="search_acc" placeholder="Enter property name">
+                            <button class="clear_loc"><i class="fa-solid fa-x"></i></button>
+                            <input type="hidden" name="category_id" value="<?php echo esc_attr($category_id); ?>">
+                            <input type="hidden" name="category_slug" value="<?php echo esc_attr($category_slug); ?>">
+                        </div>
+                        <div class="dropdown_results" style="display: none;">
+                            <ul class="properties">
+                                <?php foreach ($acc_ids as $key => $value):
+                                    $title = get_the_title($value);
+                                    $area = get_field('area', $value);
+                                    $property_id = get_field( 'property_id', $value );
+                                ?>
+                                    <li data-value="<?php echo $title ?>" data-id="<?php echo $property_id ?>" class="property"><?php echo ucwords( $title ) ?></li>
+                                <?php endforeach ?>
+                           </ul>
+                        </div>
+                    <!-- </div> -->
+                </div>
+            </div>
+
+            <!-- PRICE RANGE -->
+            <div class="filter-accordion price-range">
+                <h3 class="accordion-header">Price range
+                    <span class="accordion-icon"></span>
+                </h3>
+
+                <div class="accordion-content">
+                    <div class="price-range">
+                        <input type="range"
+                        data-type="price_min"
+                        id="price_min"
+                        min="0"
+                        max="<?php echo esc_attr($price_max); ?>"
+                        step="1000"
+                        value="<?php echo esc_attr($price_min); ?>">
+
+                        <input type="range"
+                        data-type="price_max"
+                        id="price_max"
+                        min="0"
+                        max="<?php echo esc_attr($price_max); ?>"
+                        step="1000"
+                        value="<?php echo esc_attr($price_max); ?>">
+
+                        <div class="price-values">
+                            <span>JPY <strong id="price-min-label"><?php echo number_format($price_min); ?></strong></span>
+                            <span>JPY <strong id="price-max-label"><?php echo number_format($price_max); ?></strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BEDROOMS -->
+            <div class="filter-accordion bedrooms">
+                <h3 class="accordion-header">
+                    No. of bedrooms
+                    <span class="accordion-icon"></span>
+                </h3>
+
+                <div class="accordion-content">
+                    <div class="checkbox-grid">
+                        <?php foreach ($bedroom_options as $value => $label) : ?>
+                            <div class="ch-item">
+                                <input type="checkbox"
+                                name="bedrooms[]"
+                                data-type="bedrooms-<?php echo esc_attr($value); ?>"
+                                id="bedroom-<?php echo esc_attr($value); ?>"
+                                value="<?php echo esc_attr($value); ?>"
+                                <?php checked(in_array($value, (array) $selected_bedrooms)); ?>>
+                                <label for="bedroom-<?php echo esc_attr($value); ?>">
+                                    <?php echo esc_html($label); ?>
+                                </label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AREA -->
+            <?php $display = should_display_base_area_filter($resort) ? 'block' : 'none'; ?>
+            <div class="filter-accordion base_area" style="display: <?php echo $display ?>">
+                <h3 class="accordion-header">
+                    Base area
+                    <span class="accordion-icon"></span>
+                </h3>
+                <div class="accordion-content">
+                    <div class="checkbox-list">
+                        <?php foreach ($base_areas as $slug => $label) : ?>
+                            <div class="ch-item">
+                                <input type="checkbox"
+                                name="area[]"
+                                data-type="<?php echo esc_attr($slug); ?>"
+                                id="area-<?php echo esc_attr($slug); ?>"
+                                value="<?php echo esc_attr($label); ?>"
+                                <?php checked(in_array($label, (array) $selected_areas)); ?>>
+                                <label for="area-<?php echo esc_attr($slug); ?>">
+                                    <?php echo esc_html($label); ?>
+                                </label>
+                            </div>
+                        <?php endforeach; ?>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCOMMODATION TYPE -->
+            <div class="filter-accordion type">
+                <h3 class="accordion-header">
+                    Property type
+                    <span class="accordion-icon"></span>
+                </h3>
+
+                <div class="accordion-content">
+                    <div class="checkbox-list">
+                        <?php foreach ($type_options as $value => $label) : ?>
+                            <div class="ch-item">
+                                <input type="checkbox"
+                                name="type[]"
+                                data-type="<?php echo esc_attr($value); ?>"
+                                id="<?php echo esc_attr($value); ?>"
+                                value="<?php echo esc_attr($label); ?>"
+                                <?php checked(in_array($label, (array) $selected_types)); ?>>
+                                <label for="<?php echo esc_attr($value); ?>">
+                                    <?php echo ucwords(esc_html($label)); ?>
+                                </label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ski In / Ski Out -->
+            <div class="filter-accordion ski-in-ski-out">
+                <h3 class="accordion-header">
+                    Ski-in ski-out
+                    <span class="accordion-icon"></span>
+                </h3>
+
+                <div class="accordion-content">
+                    <div class="ch-item">
+                        <input type="checkbox" id="ski_in_ski_out" data-type="ski_in_ski_out" value="Ski In Ski Out" name="ski_in_ski_out">
+                        <label for="ski_in_ski_out">Ski-in ski-out</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ski In / Ski Out -->
+            <div class="filter-accordion onsen">
+                <h3 class="accordion-header">
+                    On-site onsen
+                    <span class="accordion-icon"></span>
+                </h3>
+
+                <div class="accordion-content">
+                    <div class="ch-item">
+                        <input type="checkbox" value="onsen onsite" id="onsen" data-type="onsen" name="on-site">
+                        <label for="onsen">On-site onsen</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instant Booking -->
+            <div class="filter-accordion booking">
+                <h3 class="accordion-header">
+                    Instant Booking
+                    <span class="accordion-icon"></span>
+                </h3>
+                <div class="accordion-content">
+                    <div class="ch-item">
+                        <input type="checkbox" id="booking" data-type="booking" name="booking" value="booking">
+                        <label for="booking">Instant Booking</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discount -->
+            <div class="filter-accordion discount">
+                <h3 class="accordion-header">
+                    Discount
+                    <span class="accordion-icon"></span>
+                </h3>
+
+                <div class="accordion-content">
+                    <div class="ch-item">
+                        <input type="checkbox" id="discount" <?php if( $resort == 'offers' || $area == 'deals' ) checked( true, true, true ); ?> data-type="discount" name="discount" value="discount">
+                        <label for="discount">Discount</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <button type="button" id="apply-filters" class="filter-search-btn">
+                Search
+            </button>
+
+            <button type="button" id="clear-filters" class="filter-clear-btn">
+                Clear All Filters
+            </button>
+
+        </div>
+    </div>

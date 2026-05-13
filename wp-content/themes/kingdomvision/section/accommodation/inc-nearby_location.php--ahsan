@@ -1,0 +1,219 @@
+<?php
+
+$locations = $section['location'] ?? [];
+$main_lat = $section['main_latitude'] ?? 42.858377;
+$main_lng = $section['main_longitude'] ?? 140.705364;
+$main_title = $section['main_title'] ?? '';
+$main_address = $section['main_address'] ?? '4-chōme-3-1-7 Niseko Hirafu 1 Jō, Kutchan, Hokkaido, Japan';
+
+
+echo '<section class="full-section nearby_location" '.BackgroundFromSection($section).'>';
+echo '<div class="container">';
+    echo TitleFromSection($section);
+if (!empty($locations)) {
+
+    echo '<div class="nearby-wrapper">';
+
+    // MAP + MAIN LOCATION BOX
+    echo '<div class="nearby-map-area">';
+    echo '<div id="nearby-map" class="nearby-map"></div>';
+
+    // MAIN LOCATION BOX (floating)
+    echo '
+        <div id="main-location-box" class="main-location-box">
+            <h4>' . esc_html($main_title) . '</h4>
+            <p>' . esc_html($main_address) . '</p>
+        </div>
+    ';
+
+    echo '</div>';
+
+    // RIGHT LANDMARK LIST
+    echo '<div class="nearby-list-box">';
+    echo '<h3 class="nearby-title">Closest Landmarks</h3>';
+    echo '<div class="nearby-divider"></div>';
+    echo '<ul class="nearby-list">';
+
+    $mapArray = [];
+
+    foreach ($locations as $i => $loc) {
+
+        $title = $loc['title'] ?? '';
+        $km = $loc['km'] ?? '';
+        $lat = $loc['latitude'] ?? '';
+        $lng = $loc['longitude'] ?? '';
+
+        echo '
+            <li class="nearby-item" data-index="' . $i . '">
+                <span>' . $title . '</span>
+                <span class="distance">' . $km . ' km</span>
+            </li>';
+
+        $mapArray[] = [
+            'title' => $title,
+            'km'    => $km,
+            'lat'   => $lat,
+            'lng'   => $lng,
+        ];
+    }
+
+    echo '</ul>';
+    echo '</div>'; // list box
+
+    echo '</div>'; // wrapper
+
+    // echo '<pre>';
+    // print_r($mapArray);
+    // echo '</pre>';
+    // JS Data
+    echo '<script>
+        var nearbyData = ' . json_encode($mapArray) . ';
+        var mainLocation = {
+            lat: ' . floatval($main_lat) . ',
+            lng: ' . floatval($main_lng) . ',
+            title: "' . esc_js($main_title) . '",
+            address: "' . esc_js($main_address) . '"
+        };
+    </script>';
+}
+
+echo '</div>'; // container
+echo '</section>';
+
+?>
+<script>
+    function initNearbyMap() {
+
+        const data = nearbyData;
+        if (!data || data.length === 0) return;
+
+        const map = new google.maps.Map(document.getElementById("nearby-map"), {
+            zoom: 17,
+            center: {
+                lat: mainLocation.lat,
+                lng: mainLocation.lng
+            }
+        });
+
+        /* -----------------------------------------
+           MAIN MARKER (GREEN)
+        ----------------------------------------- */
+        const mainMarker = new google.maps.Marker({
+            position: {
+                lat: mainLocation.lat,
+                lng: mainLocation.lng
+            },
+            map,
+            icon: {
+                url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                scaledSize: new google.maps.Size(40, 40)
+            },
+            title: mainLocation.title
+        });
+
+        /* -----------------------------------------
+           MAIN INFO WINDOW (BLACK TEXT)
+        ----------------------------------------- */
+        const mainInfo = new google.maps.InfoWindow({
+            content: `
+            <div style="
+                background:#fff;
+                padding:12px 14px;
+                border-radius:10px;
+                color:#000 !important;
+                font-size:14px;
+                line-height:1.4;
+                max-width:260px;
+            ">
+                <div style="font-weight:600; margin-bottom:4px;">
+                    ${mainLocation.title}
+                </div>
+                <div>${mainLocation.address}</div>
+            </div>
+        `
+        });
+
+        // 🔥 Auto-open main popup on load
+        mainInfo.open(map, mainMarker);
+
+        // Click marker → open info window
+        mainMarker.addListener("click", () => {
+            mainInfo.open(map, mainMarker);
+        });
+
+        /* -----------------------------------------
+           NEARBY LOCATIONS
+        ----------------------------------------- */
+        const markers = [];
+        const infoWindows = [];
+
+        data.forEach((item, index) => {
+
+            const pos = {
+                lat: parseFloat(item.lat),
+                lng: parseFloat(item.lng)
+            };
+
+            const marker = new google.maps.Marker({
+                position: pos,
+                map,
+                title: item.title
+            });
+
+            markers.push(marker);
+
+            const info = new google.maps.InfoWindow({
+                content: `
+                <div class="popup-wrap" style="
+                    font-size:14px;
+                    line-height:1.4;
+                    color:#000;
+                    background:#fff;
+                    padding:8px 10px;
+                    border-radius:8px;
+                ">
+                    <div><strong>${item.title}</strong></div>
+                    <div>${item.km} km away</div>
+                </div>
+            `
+            });
+
+            infoWindows.push(info);
+
+            marker.addListener("click", () => {
+                // Close all popups
+                infoWindows.forEach(iw => iw.close());
+                mainInfo.close();
+
+                info.open(map, marker);
+                map.panTo(pos);
+
+                highlightItem(index);
+            });
+        });
+
+        /* -----------------------------------------
+           ON LIST ITEM CLICK
+        ----------------------------------------- */
+        document.querySelectorAll(".nearby-item").forEach((el) => {
+            el.addEventListener("click", function() {
+                const i = this.dataset.index;
+
+                google.maps.event.trigger(markers[i], "click");
+            });
+        });
+
+        function highlightItem(index) {
+            document.querySelectorAll(".nearby-item").forEach(el => el.classList.remove("active"));
+            const current = document.querySelector('.nearby-item[data-index="' + index + '"]');
+            if (current) current.classList.add("active");
+        }
+    }
+</script>
+
+<?php 
+$test_key = 'AIzaSyBBkjLLw29rQTvpEU-n8KWVRQGxnqzylkc';
+$live_key = '';
+?>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo $test_key ?>&libraries=places&callback=initNearbyMap"></script>
