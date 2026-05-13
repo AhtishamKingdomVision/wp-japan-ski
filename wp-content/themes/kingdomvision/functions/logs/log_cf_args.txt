@@ -1256,3 +1256,126 @@
     [order] => ASC
 )
 <br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 362
+                            [1] => 462
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 362
+                            [1] => 462
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>

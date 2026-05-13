@@ -128,3 +128,13 @@
 <pre><br></pre>
 <pre>rb_price<br></pre>
 <pre>4800<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>4320<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>4800<br></pre>
