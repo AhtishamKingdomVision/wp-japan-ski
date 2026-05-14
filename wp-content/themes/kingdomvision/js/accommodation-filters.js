@@ -144,12 +144,13 @@ const AccommodationFilters = (function() {
             
             const adults = parseInt($scope.find('.js-v-adults').text()) || parseInt($scope.find('.js-m-adults').val()) || 2;
             const children = parseInt($scope.find('.js-v-children').text()) || parseInt($scope.find('.js-m-children').val()) || 0;
+            const infants = parseInt($scope.find('.js-v-infants').text()) || parseInt($scope.find('.js-m-infants').val()) || 0;
 
             return {
                 checkin: $scope.find(CONFIG.selectors.checkin).val() || '',
                 checkout: $scope.find(CONFIG.selectors.checkout).val() || '',
                 resort: $scope.find(CONFIG.selectors.resort).val() || '',
-                guests: adults + children,
+                guests: adults + children + infants,
                 bedrooms: this.getCheckboxValues('bedrooms[]'),
                 areas: this.getCheckboxValues('area[]'),
                 accommodation_type: this.getCheckboxValues('type[]'),
@@ -616,16 +617,19 @@ const AccommodationFilters = (function() {
             // Use global values if no specific card context is provided for calculation
             const adults = parseInt(jQuery('.js-v-adults').first().text()) || 1;
             const children = parseInt(jQuery('.js-v-children').first().text()) || 0;
+            const infants = parseInt(jQuery('.js-v-infants').first().text()) || 0;
             
-            let parts = [];
-            if (adults > 0) parts.push(`${adults} adult${adults > 1 ? 's' : ''}`);
-            if (children > 0) parts.push(`${children} child${children > 1 ? 'ren' : ''}`);
+            const totalGuests = adults + children;
+            let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
             
-            const label = parts.length > 0 ? parts.join(', ') : 'Guests';
+            if (infants > 0) {
+                label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
+            }
+            
             const $displays = jQuery(CONFIG.selectors.guestsDisplay);
 
             $displays.text(label);
-            $displays.toggleClass('empty', parts.length === 0);
+            $displays.toggleClass('empty', false);
         },
 
         onFormSubmit: function(e) {
@@ -1038,45 +1042,86 @@ const AccommodationFilters = (function() {
             };
 
             window.adj = (type, delta, el) => {
-                const isAdults = type.trim() === 'adults';
-                const currentVal = parseInt(jQuery(isAdults ? '.js-v-adults' : '.js-v-children').first().text()) || 0;
+                const typeClass = type.trim();
+                const isAdults = typeClass === 'adults';
+                const isChildren = typeClass === 'children';
+                const isInfants = typeClass === 'infants';
+                
+                let selector = '.js-v-' + typeClass;
+                let mobileSelector = '.js-m-' + typeClass;
+                let minusSelector = '.js-btn-' + typeClass + '-minus';
+                
+                const currentVal = parseInt(jQuery(selector).first().text()) || 0;
                 
                 let val = currentVal + delta;
 
                 if (isAdults && val < 1) val = 1;
-                if (!isAdults && val < 0) val = 0;
+                if ((isChildren || isInfants) && val < 0) val = 0;
 
                 // Update UI for ALL cards globally
-                jQuery(isAdults ? '.js-v-adults' : '.js-v-children').text(val);
-                jQuery(isAdults ? '.js-m-adults' : '.js-m-children').val(val).trigger('change');
+                jQuery(selector).text(val);
+                jQuery(mobileSelector).val(val).trigger('change');
                 
                 // Sync minus button states globally
-                jQuery(isAdults ? '.js-btn-adults-minus' : '.js-btn-children-minus').prop('disabled', (isAdults ? val <= 1 : val <= 0));
+                if (isAdults) {
+                    jQuery(minusSelector).prop('disabled', val <= 1);
+                } else {
+                    jQuery(minusSelector).prop('disabled', val <= 0);
+                }
                 
-                // Update display label
-                this.updateGuestDisplay();
+                // Update display label directly
+                const adults = parseInt(jQuery('.js-v-adults').first().text()) || 1;
+                const children = parseInt(jQuery('.js-v-children').first().text()) || 0;
+                const infants = parseInt(jQuery('.js-v-infants').first().text()) || 0;
+                
+                const totalGuests = adults + children;
+                let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
+                
+                if (infants > 0) {
+                    label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
+                }
+                
+                jQuery(CONFIG.selectors.guestsDisplay).text(label).toggleClass('empty', false);
             };
 
             window.onMobileGuestChange = (e, el) => {
                 const $target = jQuery(e.target);
                 const val = $target.val();
                 const isAdults = $target.hasClass('js-m-adults');
+                const isChildren = $target.hasClass('js-m-children');
+                const isInfants = $target.hasClass('js-m-infants');
                 
-                // Sync ALL mobile and desktop inputs globally
-                jQuery(isAdults ? '.js-m-adults' : '.js-m-children').val(val).trigger('change');
-                jQuery(isAdults ? '.js-v-adults' : '.js-v-children').text(val);
-                
-                // Sync minus button states globally
-                jQuery(isAdults ? '.js-btn-adults-minus' : '.js-btn-children-minus').prop('disabled', (isAdults ? val <= 1 : val <= 0));
+                if (isAdults) {
+                    jQuery('.js-v-adults').text(val);
+                    jQuery('.js-btn-adults-minus').prop('disabled', val <= 1);
+                } else if (isChildren) {
+                    jQuery('.js-v-children').text(val);
+                    jQuery('.js-btn-children-minus').prop('disabled', val <= 0);
+                } else if (isInfants) {
+                    jQuery('.js-v-infants').text(val);
+                    jQuery('.js-btn-infants-minus').prop('disabled', val <= 0);
+                }
 
-                this.updateGuestDisplay();
+                // Update display label
+                const adults = parseInt(jQuery('.js-v-adults').first().text()) || 1;
+                const children = parseInt(jQuery('.js-v-children').first().text()) || 0;
+                const infants = parseInt(jQuery('.js-v-infants').first().text()) || 0;
+                
+                const totalGuests = adults + children;
+                let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
+                
+                if (infants > 0) {
+                    label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
+                }
+                
+                jQuery(CONFIG.selectors.guestsDisplay).text(label).toggleClass('empty', false);
             };
 
             window.resetFilters = (el) => {
                 const $card = jQuery(el).closest('.search-card');
                 // 1. Clear Local Storage keys used for persistence
                 const keys = [
-                    "sb_resort", "sb_checkin", "sb_checkout", "sb_adults", "sb_children",
+                    "sb_resort", "sb_checkin", "sb_checkout", "sb_adults", "sb_children", "sb_infants",
                     CONFIG.storage.checkin, CONFIG.storage.checkout, CONFIG.storage.hotelSearch
                 ];
                 keys.forEach(k => localStorage.removeItem(k));
@@ -1089,10 +1134,13 @@ const AccommodationFilters = (function() {
                 // 3. Reset Guest Counters (Desktop & Mobile)
                 $card.find('.js-v-adults').text('2');
                 $card.find('.js-v-children').text('0');
+                $card.find('.js-v-infants').text('0');
                 $card.find('.js-m-adults').val(2);
                 $card.find('.js-m-children').val(0);
+                $card.find('.js-m-infants').val(0);
                 $card.find('.js-btn-adults-minus').prop('disabled', true);
                 $card.find('.js-btn-children-minus').prop('disabled', true);
+                $card.find('.js-btn-infants-minus').prop('disabled', true);
 
                 // Restore placeholder label
                 const $display = $card.find(CONFIG.selectors.guestsDisplay);

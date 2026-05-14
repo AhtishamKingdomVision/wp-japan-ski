@@ -1,3 +1,8 @@
 <pre>Room New Room 1 synced with ID: 76472<br></pre>
 <pre>Room New Room 2 synced with ID: 76473<br></pre>
 <pre>Room New Room 3 synced with ID: 76474<br></pre>
+<pre>Room 1 Bedroom Apartment synced with ID: 76594<br></pre>
+<pre>Room Superior 1 Bedroom Apartment Plus Loft synced with ID: 76595<br></pre>
+<pre>Room Deluxe 1 Bedroom Apartment Plus Loft synced with ID: 76596<br></pre>
+<pre>Room 2 Bedroom Apartment synced with ID: 76598<br></pre>
+<pre>Room 2 Bedroom Apartment synced with ID: 76600<br></pre>

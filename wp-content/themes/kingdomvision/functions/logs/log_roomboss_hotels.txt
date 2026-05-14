@@ -1,1 +1,4 @@
 <pre>Accommodation QA Testing synced with ID: 76471<br></pre>
+<pre>Accommodation Passage Lodge synced with ID: 76593<br></pre>
+<pre>Accommodation Shimogoryo House synced with ID: 76597<br></pre>
+<pre>Accommodation Setsurin synced with ID: 76599<br></pre>

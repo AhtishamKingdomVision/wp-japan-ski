@@ -1164,7 +1164,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       adults: 2,
 
-      children: 0
+      children: 0,
+
+      infants: 0
 
     };
  
@@ -1177,10 +1179,13 @@ document.addEventListener('DOMContentLoaded', function () {
       pop: card.querySelector('.guests-popover'),
       adultsVal: card.querySelector('.js-v-adults'),
       childrenVal: card.querySelector('.js-v-children'),
+      infantsVal: card.querySelector('.js-v-infants'),
       mAdults: card.querySelector('.js-m-adults'),
       mChildren: card.querySelector('.js-m-children'),
+      mInfants: card.querySelector('.js-m-infants'),
       btnAM: card.querySelector('.js-btn-adults-minus'),
       btnCM: card.querySelector('.js-btn-children-minus'),
+      btnIM: card.querySelector('.js-btn-infants-minus'),
 
     };
  
@@ -1194,29 +1199,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (g.children) parts.push(g.children + ' child' + (g.children > 1 ? 'ren' : ''));
  
+      if (g.infants) parts.push(g.infants + ' infant' + (g.infants > 1 ? 's' : ''));
+
       el.display.textContent = parts.length ? parts.join(', ') : 'Guests';
 
       el.display.classList.toggle('empty', !parts.length);
- 
+
       if (el.adultsVal) el.adultsVal.textContent = g.adults;
 
       if (el.childrenVal) el.childrenVal.textContent = g.children;
- 
+
+      if (el.infantsVal) el.infantsVal.textContent = g.infants;
+
       if (el.btnAM) el.btnAM.disabled = g.adults <= 1;
 
       if (el.btnCM) el.btnCM.disabled = g.children <= 0;
- 
+
+      if (el.btnIM) el.btnIM.disabled = g.infants <= 0;
+
       if (el.mAdults) el.mAdults.value = g.adults;
 
       if (el.mChildren) el.mChildren.value = g.children;
 
-    }
- 
-    function adj(type, delta) {
-
-      g[type] = Math.max(type === 'adults' ? 1 : 0, g[type] + delta);
-
-      renderGuests();
+      if (el.mInfants) el.mInfants.value = g.infants;
 
     }
  
@@ -1254,9 +1259,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         else if (this.classList.contains('js-btn-children-minus')) adj('children', -1);
 
+        else if (this.classList.contains('js-btn-infants-minus')) adj('infants', -1);
+
         else if (row.querySelector('.js-v-adults')) adj('adults', 1);
 
-        else adj('children', 1);
+        else if (row.querySelector('.js-v-children')) adj('children', 1);
+
+        else if (row.querySelector('.js-v-infants')) adj('infants', 1);
  
       });
 
@@ -1268,6 +1277,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
       g.children = Math.max(0, parseInt(el.mChildren?.value || 0));
 
+      g.infants = Math.max(0, parseInt(el.mInfants?.value || 0));
+
       renderGuests();
 
     }
@@ -1275,6 +1286,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el.mAdults) el.mAdults.addEventListener('change', syncMobile);
 
     if (el.mChildren) el.mChildren.addEventListener('change', syncMobile);
+
+    if (el.mInfants) el.mInfants.addEventListener('change', syncMobile);
  
     renderGuests();
  
