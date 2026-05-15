@@ -6,3 +6,17 @@
 <pre>Room Deluxe 1 Bedroom Apartment Plus Loft synced with ID: 76596<br></pre>
 <pre>Room 2 Bedroom Apartment synced with ID: 76598<br></pre>
 <pre>Room 2 Bedroom Apartment synced with ID: 76600<br></pre>
+<pre>Room 2 Bedroom House synced with ID: 76602<br></pre>
+<pre>Room Studio Apartment synced with ID: 76604<br></pre>
+<pre>Room 2 Bedroom Apartment synced with ID: 76605<br></pre>
+<pre>Room 3 Bedroom Apartment synced with ID: 76606<br></pre>
+<pre>Room 4 Bedroom House synced with ID: 76608<br></pre>
+<pre>Room 3 Bedroom Suite Moonmist synced with ID: 76610<br></pre>
+<pre>Room 2 Bedroom Suite Iceberg synced with ID: 76611<br></pre>
+<pre>Room 1 Bedroom Suite with Loft synced with ID: 76612<br></pre>
+<pre>Room 1 Bedroom Suite synced with ID: 76613<br></pre>
+<pre>Room 3 Bedroom Chalet synced with ID: 82021<br></pre>
+<pre>Room 4 Bedroom Apartment synced with ID: 76617<br></pre>
+<pre>Room 2 Bedroom Apartment synced with ID: 76618<br></pre>
+<pre>Room 1 Bedroom Apartment synced with ID: 76619<br></pre>
+<pre>Room 3 Bedroom Apartment synced with ID: 76620<br></pre>

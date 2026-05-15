@@ -194,3 +194,255 @@
     [data_format] => body
 )
  -- -- -- 2026-05-14 16:00:43<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":2,"locationCode":"","boardBasisId":"","start_date":"12-Feb-2027","end_date":"16-Feb-2027","duration":4,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-14 16:07:54<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"12-Feb-2027","end_date":"16-Feb-2027","duration":4,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-14 16:11:45<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"12-Feb-2027","end_date":"16-Feb-2027","duration":4,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 08:25:11<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"12-Feb-2027","end_date":"16-Feb-2027","duration":4,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 08:42:41<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"12-Feb-2027","end_date":"16-Feb-2027","duration":4,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 08:53:21<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"07-Nov-2026","end_date":"26-Nov-2026","duration":19,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 08:58:40<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"07-Nov-2026","end_date":"26-Nov-2026","duration":19,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 08:59:42<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"08-Nov-2026","end_date":"27-Nov-2026","duration":19,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 09:00:15<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"08-Nov-2026","end_date":"27-Nov-2026","duration":19,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 09:00:52<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"12-Feb-2027","end_date":"16-Feb-2027","duration":4,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 09:05:50<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"07-Apr-2027","end_date":"16-Apr-2027","duration":9,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 09:06:38<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"08-Apr-2027","end_date":"17-Apr-2027","duration":9,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 09:44:38<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"12-Feb-2027","end_date":"16-Feb-2027","duration":4,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 10:30:10<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"14-Feb-2027","end_date":"28-Feb-2027","duration":14,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 10:30:46<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"14-Feb-2027","end_date":"27-Feb-2027","duration":13,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 10:31:22<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"01-Jan-2027","end_date":"08-Jan-2027","duration":7,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 10:35:13<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":2,"locationCode":"","boardBasisId":"","start_date":"01-Jan-2027","end_date":"08-Jan-2027","duration":7,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 10:36:18<br></pre>
+<pre>Array
+(
+    [method] => POST
+    [headers] => Array
+        (
+            [Content-Type] => application/json
+            [Authorization] => Bearer 10530|1AOM2D6filRSzAyD7GWpV9Vy8za5sBNK32r6rE9G45ce4a71
+        )
+
+    [body] => {"accommodationName":"","minRange":null,"maxRange":null,"resortId":1,"locationCode":"","boardBasisId":"","start_date":"03-Jan-2027","end_date":"08-Jan-2027","duration":5,"units":1,"channel":true,"bedBank":true,"testMode":false,"propertType":{"apartment":false,"chalet":false,"hotel":false},"maxPersons":1,"totalAdults":1,"totalChildren":0,"totalInfants":0,"offset":0,"limit":50,"adults":[1],"children":[0],"infants":[0],"propertyIds":[]}
+    [timeout] => 30
+    [data_format] => body
+)
+ -- -- -- 2026-05-15 10:37:56<br></pre>

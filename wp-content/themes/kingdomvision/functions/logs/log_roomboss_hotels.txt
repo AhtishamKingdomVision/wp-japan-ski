@@ -2,3 +2,9 @@
 <pre>Accommodation Passage Lodge synced with ID: 76593<br></pre>
 <pre>Accommodation Shimogoryo House synced with ID: 76597<br></pre>
 <pre>Accommodation Setsurin synced with ID: 76599<br></pre>
+<pre>Accommodation Private House Naturwald synced with ID: 76601<br></pre>
+<pre>Accommodation Orchid Furano synced with ID: 76603<br></pre>
+<pre>Accommodation Mountain View Lodge synced with ID: 76607<br></pre>
+<pre>Accommodation Starry Residence Suite synced with ID: 76609<br></pre>
+<pre>Accommodation Yuki Ki Lodge synced with ID: 76614<br></pre>
+<pre>Accommodation Echoland Apartments synced with ID: 76616<br></pre>

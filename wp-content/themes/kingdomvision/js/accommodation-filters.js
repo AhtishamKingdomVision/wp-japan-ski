@@ -45,7 +45,11 @@ const AccommodationFilters = (function() {
         storage: {
             hotelSearch: 'niseko_hotel_search',
             checkin: 'niseko_checkin',
-            checkout: 'niseko_checkout'
+            checkout: 'niseko_checkout',
+            resort: 'sb_resort',
+            adults: 'sb_adults',
+            children: 'sb_children',
+            infants: 'sb_infants'
         },
     };
 
@@ -141,16 +145,13 @@ const AccommodationFilters = (function() {
     const FilterData = {
         collect: function(context) {
             const $scope = context ? jQuery(context).closest('.search-card') : jQuery(CONFIG.selectors.searchForm).first();
-            
-            const adults = parseInt($scope.find('.js-v-adults').text()) || parseInt($scope.find('.js-m-adults').val()) || 2;
-            const children = parseInt($scope.find('.js-v-children').text()) || parseInt($scope.find('.js-m-children').val()) || 0;
-            const infants = parseInt($scope.find('.js-v-infants').text()) || parseInt($scope.find('.js-m-infants').val()) || 0;
+            const guestState = SearchState.getGuestCounts($scope);
 
             return {
                 checkin: $scope.find(CONFIG.selectors.checkin).val() || '',
                 checkout: $scope.find(CONFIG.selectors.checkout).val() || '',
                 resort: $scope.find(CONFIG.selectors.resort).val() || '',
-                guests: adults + children + infants,
+                guests: guestState.adults + guestState.children + guestState.infants,
                 bedrooms: this.getCheckboxValues('bedrooms[]'),
                 areas: this.getCheckboxValues('area[]'),
                 accommodation_type: this.getCheckboxValues('type[]'),
@@ -180,6 +181,120 @@ const AccommodationFilters = (function() {
         }
     };
 
+    const SearchState = {
+        getGuestCounts: function(context) {
+            const $scope = context && context.jquery ? context : context ? jQuery(context).closest('.search-card') : jQuery(CONFIG.selectors.searchForm).first();
+
+            return {
+                adults: parseInt($scope.find('.js-v-adults').first().text(), 10) || parseInt($scope.find('.js-m-adults').first().val(), 10) || 2,
+                children: parseInt($scope.find('.js-v-children').first().text(), 10) || parseInt($scope.find('.js-m-children').first().val(), 10) || 0,
+                infants: parseInt($scope.find('.js-v-infants').first().text(), 10) || parseInt($scope.find('.js-m-infants').first().val(), 10) || 0,
+            };
+        },
+
+        save: function(context, values = null) {
+            const $scope = context && context.jquery ? context : context ? jQuery(context).closest('.search-card') : jQuery(CONFIG.selectors.searchForm).first();
+            const guestState = this.getGuestCounts($scope);
+            const state = values || {};
+            const resort = state.resort !== undefined ? state.resort : ($scope.find(CONFIG.selectors.resort).val() || '');
+            const checkin = state.checkin !== undefined ? state.checkin : ($scope.find(CONFIG.selectors.checkin).val() || '');
+            const checkout = state.checkout !== undefined ? state.checkout : ($scope.find(CONFIG.selectors.checkout).val() || '');
+
+            if (resort) {
+                localStorage.setItem(CONFIG.storage.resort, resort);
+            } else {
+                localStorage.removeItem(CONFIG.storage.resort);
+            }
+
+            if (checkin) {
+                localStorage.setItem(CONFIG.storage.checkin, checkin);
+            }
+
+            if (checkout) {
+                localStorage.setItem(CONFIG.storage.checkout, checkout);
+            }
+
+            localStorage.setItem(CONFIG.storage.adults, String(guestState.adults));
+            localStorage.setItem(CONFIG.storage.children, String(guestState.children));
+            localStorage.setItem(CONFIG.storage.infants, String(guestState.infants));
+        },
+
+        restore: function() {
+            const resort = localStorage.getItem(CONFIG.storage.resort);
+            const checkin = localStorage.getItem(CONFIG.storage.checkin);
+            const checkout = localStorage.getItem(CONFIG.storage.checkout);
+            const adults = parseInt(localStorage.getItem(CONFIG.storage.adults), 10);
+            const children = parseInt(localStorage.getItem(CONFIG.storage.children), 10);
+            const infants = parseInt(localStorage.getItem(CONFIG.storage.infants), 10);
+
+            if (resort) {
+                jQuery(CONFIG.selectors.resort).each(function() {
+                    if (!jQuery(this).val()) {
+                        jQuery(this).val(resort);
+                    }
+                });
+            }
+
+            if (checkin) {
+                jQuery(CONFIG.selectors.checkin).each(function() {
+                    if (!jQuery(this).val()) {
+                        jQuery(this).val(checkin);
+                    }
+                });
+            }
+
+            if (checkout) {
+                jQuery(CONFIG.selectors.checkout).each(function() {
+                    if (!jQuery(this).val()) {
+                        jQuery(this).val(checkout).prop('disabled', false);
+                    }
+                });
+            }
+
+            if (Number.isFinite(adults) && adults > 0) {
+                this.applyGuests({
+                    adults: adults,
+                    children: Number.isFinite(children) && children >= 0 ? children : 0,
+                    infants: Number.isFinite(infants) && infants >= 0 ? infants : 0,
+                });
+            }
+        },
+
+        applyGuests: function(guestState) {
+            const adults = Math.max(1, parseInt(guestState.adults, 10) || 2);
+            const children = Math.max(0, parseInt(guestState.children, 10) || 0);
+            const infants = Math.max(0, parseInt(guestState.infants, 10) || 0);
+            const totalGuests = adults + children;
+            let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
+
+            if (infants > 0) {
+                label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
+            }
+
+            jQuery('.js-v-adults').text(adults);
+            jQuery('.js-v-children').text(children);
+            jQuery('.js-v-infants').text(infants);
+            jQuery('.js-m-adults').val(adults);
+            jQuery('.js-m-children').val(children);
+            jQuery('.js-m-infants').val(infants);
+            jQuery('.js-btn-adults-minus').prop('disabled', adults <= 1);
+            jQuery('.js-btn-children-minus').prop('disabled', children <= 0);
+            jQuery('.js-btn-infants-minus').prop('disabled', infants <= 0);
+            jQuery(CONFIG.selectors.guestsDisplay).text(label).toggleClass('empty', false);
+        },
+
+        clear: function() {
+            [
+                CONFIG.storage.checkin,
+                CONFIG.storage.checkout,
+                CONFIG.storage.resort,
+                CONFIG.storage.adults,
+                CONFIG.storage.children,
+                CONFIG.storage.infants,
+            ].forEach((key) => localStorage.removeItem(key));
+        }
+    };
+
     // ============================================================================
     // AJAX SEARCH - With error handling and timeout
     // ============================================================================
@@ -195,6 +310,8 @@ const AccommodationFilters = (function() {
 
             const filterData = FilterData.collect(context);
             const perPage = State.cache.$form.attr('per_page') || CONFIG.defaults.perPage;
+
+            SearchState.save(context, filterData);
 
             // Save dates
             FilterData.saveDatesTolocalStorage(filterData.checkin, filterData.checkout);
@@ -483,8 +600,7 @@ const AccommodationFilters = (function() {
             jQuery(`${CONFIG.selectors.appliedFilters} .filter`).hide();
 
             localStorage.setItem('apply-filters', 'true');
-            localStorage.removeItem(CONFIG.storage.checkin);
-            localStorage.removeItem(CONFIG.storage.checkout);
+            SearchState.clear();
 
             jQuery('input[name="checkin"], input[name="checkout"]').val('');
             jQuery('#apply-filters').trigger('click');
@@ -718,6 +834,9 @@ const AccommodationFilters = (function() {
             
             // Sync all resort dropdowns
             jQuery(CONFIG.selectors.resort).val($input.val());
+            SearchState.save($input.closest('.search-card'), {
+                resort: $input.val() || ''
+            });
 
             const resortKey = resortSlug.replace('-accommodation', '');
             Filters.updateBaseArea(resortKey);
@@ -1013,6 +1132,8 @@ const AccommodationFilters = (function() {
                 Events.init();
             }
 
+            SearchState.restore();
+
             if (!hasRequiredElements) {
                 // if (isAccommodationPage) {
                 //     console.error('AccommodationFilters: Required DOM elements not found on an /accommodation/ page.');
@@ -1037,7 +1158,7 @@ const AccommodationFilters = (function() {
             window.toggleGuests = (e, el) => {
                 e.stopPropagation();
                 const $card = jQuery(el).closest('.search-card');
-                $card.find('.guests-popover').toggleClass('show');
+                $card.find('.guests-popover').toggleClass('open');
                 $card.find('.sb-guests-desktop').toggleClass('active');
             };
 
@@ -1082,6 +1203,7 @@ const AccommodationFilters = (function() {
                 }
                 
                 jQuery(CONFIG.selectors.guestsDisplay).text(label).toggleClass('empty', false);
+                SearchState.save();
             };
 
             window.onMobileGuestChange = (e, el) => {
@@ -1115,14 +1237,16 @@ const AccommodationFilters = (function() {
                 }
                 
                 jQuery(CONFIG.selectors.guestsDisplay).text(label).toggleClass('empty', false);
+                SearchState.save();
             };
 
             window.resetFilters = (el) => {
                 const $card = jQuery(el).closest('.search-card');
                 // 1. Clear Local Storage keys used for persistence
                 const keys = [
-                    "sb_resort", "sb_checkin", "sb_checkout", "sb_adults", "sb_children", "sb_infants",
-                    CONFIG.storage.checkin, CONFIG.storage.checkout, CONFIG.storage.hotelSearch
+                    CONFIG.storage.resort, CONFIG.storage.checkin, CONFIG.storage.checkout,
+                    CONFIG.storage.adults, CONFIG.storage.children, CONFIG.storage.infants,
+                    CONFIG.storage.hotelSearch
                 ];
                 keys.forEach(k => localStorage.removeItem(k));
 
@@ -1155,7 +1279,7 @@ const AccommodationFilters = (function() {
             // Close popover when clicking outside
             jQuery(document).on('click', function(e) {
                 if (!jQuery(e.target).closest('.sb-guests-desktop, .guests-popover').length) {
-                    jQuery('.guests-popover').removeClass('show');
+                    jQuery('.guests-popover').removeClass('open');
                     jQuery('.sb-guests-desktop').removeClass('active');
                 }
             });

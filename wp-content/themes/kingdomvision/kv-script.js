@@ -545,8 +545,20 @@ jQuery(function ($) {
 
     /** Check in Checkout script */
 
+    const savedResort = localStorage.getItem('sb_resort');
     const savedCheckin = localStorage.getItem('niseko_checkin');
     const savedCheckout = localStorage.getItem('niseko_checkout');
+    const savedAdults = parseInt(localStorage.getItem('sb_adults'), 10);
+    const savedChildren = parseInt(localStorage.getItem('sb_children'), 10);
+    const savedInfants = parseInt(localStorage.getItem('sb_infants'), 10);
+
+    if (savedResort) {
+        $('.js-sb-resort').each(function () {
+            if (!$(this).val()) {
+                $(this).val(savedResort);
+            }
+        });
+    }
 
     /*new resort function*/
     
@@ -1157,16 +1169,20 @@ jQuery(function ($) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    const initialAdults = parseInt(localStorage.getItem('sb_adults'), 10);
+    const initialChildren = parseInt(localStorage.getItem('sb_children'), 10);
+    const initialInfants = parseInt(localStorage.getItem('sb_infants'), 10);
  
   document.querySelectorAll('.search-card').forEach(function(card) {
  
     let g = {
 
-      adults: 2,
+                        adults: Number.isFinite(initialAdults) && initialAdults > 0 ? initialAdults : 2,
 
-      children: 0,
+                        children: Number.isFinite(initialChildren) && initialChildren >= 0 ? initialChildren : 0,
 
-      infants: 0
+                        infants: Number.isFinite(initialInfants) && initialInfants >= 0 ? initialInfants : 0
 
     };
  
@@ -1192,18 +1208,23 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!el.display || !el.pop) return;
  
     function renderGuests() {
- 
-      let parts = [];
- 
-      if (g.adults) parts.push(g.adults + ' adult' + (g.adults > 1 ? 's' : ''));
 
-      if (g.children) parts.push(g.children + ' child' + (g.children > 1 ? 'ren' : ''));
+            localStorage.setItem('sb_adults', String(g.adults));
+
+            localStorage.setItem('sb_children', String(g.children));
+
+            localStorage.setItem('sb_infants', String(g.infants));
  
-      if (g.infants) parts.push(g.infants + ' infant' + (g.infants > 1 ? 's' : ''));
+            const totalGuests = g.adults + g.children;
+            let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
 
-      el.display.textContent = parts.length ? parts.join(', ') : 'Guests';
+            if (g.infants > 0) {
+                label += `, ${g.infants} Infant${g.infants !== 1 ? 's' : ''}`;
+            }
 
-      el.display.classList.toggle('empty', !parts.length);
+            el.display.textContent = label;
+
+            el.display.classList.toggle('empty', totalGuests <= 0 && g.infants <= 0);
 
       if (el.adultsVal) el.adultsVal.textContent = g.adults;
 
@@ -1254,18 +1275,41 @@ document.addEventListener('DOMContentLoaded', function () {
       btn.addEventListener('click', function () {
  
         const row = this.closest('.g-row');
+
+                const applyLocalAdjust = function(type, delta) {
+                    if (type === 'adults') {
+                        g.adults = Math.max(1, g.adults + delta);
+                    } else if (type === 'children') {
+                        g.children = Math.max(0, g.children + delta);
+                    } else if (type === 'infants') {
+                        g.infants = Math.max(0, g.infants + delta);
+                    }
+                    renderGuests();
+                };
+
+                const runAdjust = function(type, delta) {
+                    if (typeof window.adj === 'function') {
+                        window.adj(type, delta);
+                        g.adults = Math.max(1, parseInt(el.adultsVal?.textContent || g.adults, 10) || g.adults);
+                        g.children = Math.max(0, parseInt(el.childrenVal?.textContent || g.children, 10) || g.children);
+                        g.infants = Math.max(0, parseInt(el.infantsVal?.textContent || g.infants, 10) || g.infants);
+                        renderGuests();
+                        return;
+                    }
+                    applyLocalAdjust(type, delta);
+                };
  
-        if (this.classList.contains('js-btn-adults-minus')) adj('adults', -1);
+                if (this.classList.contains('js-btn-adults-minus')) runAdjust('adults', -1);
 
-        else if (this.classList.contains('js-btn-children-minus')) adj('children', -1);
+                else if (this.classList.contains('js-btn-children-minus')) runAdjust('children', -1);
 
-        else if (this.classList.contains('js-btn-infants-minus')) adj('infants', -1);
+                else if (this.classList.contains('js-btn-infants-minus')) runAdjust('infants', -1);
 
-        else if (row.querySelector('.js-v-adults')) adj('adults', 1);
+                else if (row.querySelector('.js-v-adults')) runAdjust('adults', 1);
 
-        else if (row.querySelector('.js-v-children')) adj('children', 1);
+                else if (row.querySelector('.js-v-children')) runAdjust('children', 1);
 
-        else if (row.querySelector('.js-v-infants')) adj('infants', 1);
+                else if (row.querySelector('.js-v-infants')) runAdjust('infants', 1);
  
       });
 
