@@ -89,18 +89,31 @@
         // Ensure layout is handled on load (handles mobile cart positioning etc)
         handle_layout();
 
-        $(document).on('click', '.roomboss_btn', function() {
-            room_filter_submit_func();
+        jQuery(document).on('click', '.room_details', function() {
+           let parent = jQuery( this ).parents('.room-card'),
+                rc_cover = parent.find('.rc_cover'),
+                room_btns = rc_cover.find( '.room-btns' ),
+                btn = room_btns.find('button.btn');
+
+            btn.trigger('click');
         });
         
+        // jQuery(document).on('click', '.detail_btn, .detail_btn img', function() {
+        //    let parent = jQuery( this ).parents('.room-card'),
+        //         rc_cover = parent.find('.rc_cover'),
+        //         room_btns = rc_cover.find( '.room-btns' ),
+        //         btn = room_btns.find('a.btn');
 
-        $(document).on('click', '.book-btn', function(e) {
+        //     btn.trigger('click');
+        // });
+
+        jQuery(document).on('click', '.book-btn', function(e) {
             if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
             const ratesChecked = rb_storage.get(acc_id + '_rates_checked') === 'true';
             const bookingContext = rb_storage.getJSON('rb_booking_context');
 
-            if (!ratesChecked && !bookingContext) {
+            if ( (!ratesChecked && !bookingContext ) || ( bookingContext.checkin === '' || bookingContext.checkout === '' ) ) {
                 alert('Please enter dates.');
                 return;
             }
@@ -204,7 +217,6 @@
                 body.addClass('mobile');
 
                 if( rbcart.length > 0 && body.hasClass( 'mobile' ) ){
-                    console.log( 'Moving cart for mobile layout' );
 
                     // Move rbcart to be the first child of the body
                     rbcart.prependTo(body);
@@ -215,7 +227,6 @@
                 var parent = $('.rb-booking-layout');
 
                 if( rbcart.length > 0 && body.hasClass( 'mobile' ) ){
-                    console.log( 'Moving cart back for desktop layout' );
 
                     body.removeClass('mobile');
                     // Move rbcart to be the first child of the body
@@ -403,6 +414,20 @@
             $( 'body' ).removeClass('cart-active');
         });
         
+        $('.filter-tab.reset').on('click', function() {
+            localStorage.setItem( 'apply-filters', false );
+            $('.filter-tabs .close_filter').each( function ( i,e ){
+                $(this).trigger('click');
+            } );
+            var parent = $( this ).parent('.filter');
+            parent.hide();
+            localStorage.setItem( 'apply-filters', true );
+            localStorage.removeItem( 'niseko_checkin' );
+            localStorage.removeItem( 'niseko_checkout' );
+            $('#sc-check-in, #sc-check-out').val('');
+            $('#apply-filters').trigger('click');
+        });
+
         function updateBedroomTabs(availableBedroomTypes) {
             var avl_units = $( '.available_units' )[0].outerHTML;
             $('.bedroom-tabs').empty();
@@ -417,19 +442,21 @@
 
 
         function kv_booking_cart_get() {
-            return JSON.parse(localStorage.getItem('rb_cart') || '{"items":[]}');
+            try {
+                const val = sessionStorage.getItem('rb_cart');
+                return val ? JSON.parse(val) : { items: [] };
+            } catch(e) { return { items: [] }; }
         }
 
         function kv_booking_cart_set(cart) {
-            localStorage.setItem('rb_cart', JSON.stringify(cart));
+            try { sessionStorage.setItem('rb_cart', JSON.stringify(cart)); } catch(e) {}
         }
 
         function kv_booking_cart_render() {
 
             const cart = kv_booking_cart_get();
-            const $body = jQuery('#rbCartBody');
+            const $body  = jQuery('#rbCartBody');
             const $footer = jQuery('#rbCartFooter');
-            const $total = jQuery('#rbCartTotal');
 
             if (!cart.items || !cart.items.length) {
                 $body.html('<p class="rb-cart-empty">No rooms selected yet.</p>');
@@ -437,39 +464,125 @@
                 return;
             }
 
-            let html = '';
-            let sum = 0;
+            // ------ Property header (from first cart item) ------
+            const first = cart.items[0];
+            let propertyHtml = '';
+            if (first.property_name) {
+                const pImg = first.property_image
+                    ? `<img src="${first.property_image}" alt="${first.property_name}" class="rb-cart-property-img">`
+                    : '';
+                propertyHtml = `<div class="rb-cart-property">
+                    ${pImg}
+                    <div class="rb-cart-property-info">
+                        <div class="rb-cart-property-name">${first.property_name}</div>
+                        ${first.resort_name ? `<div class="rb-cart-resort-name">${first.resort_name}</div>` : ''}
+                    </div>
+                </div>`;
+            }
+
+            let html = propertyHtml;
+            let subtotal     = 0;
+            let totalDeposit = 0;
+            let totalBalance = 0;
 
             cart.items.forEach((it, idx) => {
-                sum += Number(it.price || 0);
-                const guestsLabel = it.guests?.label || `${it.guests?.adults || 0} adults`;
-                const checkIn = it.dates?.check_in || '';
-                const checkOut = it.dates?.check_out || '';
-                const formattedPrice = it.price ? '¥' + Number(it.price).toLocaleString('ja-JP') : '';
+                const price   = Number(it.price || 0);
+                subtotal     += price;
+                const deposit = Number(it.payment?.depositAmount    || 0);
+                const balance = Number(it.payment?.balanceDueAmount || (price - deposit));
+                totalDeposit += deposit;
+                totalBalance += balance;
+
+                const totalPax      = (it.guests?.adults || 0) + (it.guests?.children || 0) + (it.guests?.infants || 0);
+                const formattedPrice = '¥' + price.toLocaleString('ja-JP');
+
+                const roomImgHtml = it.room_image
+                    ? `<div class="rb-summary-room-img-wrap"><img src="${it.room_image}" alt="${it.room_name || ''}" class="rb-summary-room-img"></div>`
+                    : '';
+
+                let guestRows = '';
+                if (it.guests?.adults)   guestRows += `<div class="rb-guest-row"><span>Adults</span><strong>${it.guests.adults}</strong></div>`;
+                if (it.guests?.children) guestRows += `<div class="rb-guest-row"><span>Children</span><strong>${it.guests.children}</strong></div>`;
+                if (it.guests?.infants)  guestRows += `<div class="rb-guest-row"><span>Infants</span><strong>${it.guests.infants}</strong></div>`;
+
+                let paymentHtml = '';
+                if (deposit > 0) {
+                    paymentHtml += `<div class="rb-payment-row rb-payment-deposit">
+                        <span>Deposit on booking</span>
+                        <strong>¥${deposit.toLocaleString('ja-JP')}</strong>
+                    </div>`;
+                    if (balance > 0) {
+                        const balanceDateFmt = it.payment?.balanceDueDate
+                            ? new Date(it.payment.balanceDueDate).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})
+                            : '';
+                        paymentHtml += `<div class="rb-payment-row rb-payment-balance">
+                            <span>Balance due${balanceDateFmt ? ' (' + balanceDateFmt + ')' : ''}</span>
+                            <strong>¥${balance.toLocaleString('ja-JP')}</strong>
+                        </div>`;
+                    }
+                } else {
+                    const dueDateFmt = it.payment?.balanceDueDate
+                        ? new Date(it.payment.balanceDueDate).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'})
+                        : '';
+                    paymentHtml += `<div class="rb-payment-row">
+                        <span>Full amount${dueDateFmt ? ' due ' + dueDateFmt : ' due on booking'}</span>
+                        <strong>${formattedPrice}</strong>
+                    </div>`;
+                }
 
                 html += `<div class="rb-summary-card" data-idx="${idx}">
-                    <div class="rb-summary-head">
-                        <div class="rb-summary-room">${it.room_name || ''}</div>
-                        <div class="rb-summary-price-wrap">
-                            <div class="rb-summary-price">${formattedPrice}</div>
-                            <button type="button" class="rb-remove" title="Remove"></button>
+                    ${roomImgHtml}
+                    <div class="rb-summary-card-body">
+                        <div class="rb-summary-head">
+                            <div class="rb-summary-room-info">
+                                <div class="rb-summary-room">${it.room_name || ''}</div>
+                                <div class="rb-summary-rate">${it.rateplan_name || ''}</div>
+                            </div>
+                            <div class="rb-summary-price-wrap">
+                                <div class="rb-summary-price">${formattedPrice}</div>
+                                <button type="button" class="rb-remove" title="Remove"></button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="rb-summary-rate">${it.rateplan_name || ''}</div>
-                    <div class="rb-summary-guests">${guestsLabel || ''}</div>
-                    <div class="rb-summary-dates">
-                        <div class="rb-date"><span>Check in</span>${checkIn || ''}</div>
-                        <div class="rb-date-separator"></div>
-                        <div class="rb-date"><span>Check out</span>${checkOut || ''}</div>
+                        <div class="rb-summary-guests-detail">
+                            <div class="rb-summary-pax">Total guests: ${totalPax}</div>
+                            ${guestRows}
+                        </div>
+                        <div class="rb-summary-dates">
+                            <div class="rb-date"><span>Check in</span>${it.dates?.checkinDisplay || ''}</div>
+                            <div class="rb-date-separator"></div>
+                            <div class="rb-date"><span>Check out</span>${it.dates?.checkoutDisplay || ''}</div>
+                        </div>
+                        <div class="rb-summary-payment">${paymentHtml}</div>
                     </div>
                 </div>`;
             });
 
             $body.html(html);
-            $total.text('¥' + sum.toLocaleString('ja-JP'));
-            $footer.show();
-            $('.rb-select-btn').removeClass('is-selected').text('Select');
 
+            // ------ Footer: subtotal + deposit totals + grand total ------
+            let footerHtml = '';
+            if (cart.items.length > 1) {
+                footerHtml += `<div class="rb-total-row rb-subtotal-row">
+                    <span>Subtotal</span><span>¥${subtotal.toLocaleString('ja-JP')}</span>
+                </div>`;
+            }
+            if (totalDeposit > 0) {
+                footerHtml += `<div class="rb-total-row rb-deposit-sum-row">
+                    <span>Total deposit</span><span>¥${totalDeposit.toLocaleString('ja-JP')}</span>
+                </div>
+                <div class="rb-total-row rb-balance-sum-row">
+                    <span>Total balance</span><span>¥${totalBalance.toLocaleString('ja-JP')}</span>
+                </div>`;
+            }
+            footerHtml += `<div class="rb-total-row rb-grand-total-row">
+                <strong>Total</strong>
+                <strong><span id="rbCartTotal">¥${subtotal.toLocaleString('ja-JP')}</span></strong>
+            </div>
+            <button type="button" class="rb-proceed-btn">Proceed</button>`;
+
+            $footer.html(footerHtml).show();
+
+            $('.rb-select-btn').removeClass('is-selected').text('Select');
             cart.items.forEach(it => {
                 $(`.rb-rateplan-box[data-room-type-id="${it.room_type_id}"][data-rateplan-id="${it.rateplan_id}"]`)
                     .find('.rb-select-btn').addClass('is-selected').text('Selected');
@@ -497,10 +610,8 @@
                     const $btn = $(this);
                     const $box = $btn.closest('.rb-rateplan-box');
                     const $room = $btn.closest('.rb-room-card');
-                    const $wrap = $('.rb-booking-layout');
-                    const form = $('#room-filter-form');
-                    const hotel_name = $( '.title-wrapper h1' ).text();
-                    const hotel_tid = form.attr('property-id');
+                    // const $wrap = $('.rb-booking-layout');
+                    // const form = $('#room-filter-form');
 
                     /* --------------------------------------------------
                        1️⃣ READ ROOM LIMITS & GUESTS
@@ -532,27 +643,6 @@
                         return;
                     }
 
-                    console.log('✅ guest validation passed');
-
-                    /* --------------------------------------------------
-                       3️⃣ READ DATES & NIGHTS (SINGLE SOURCE)
-                    -------------------------------------------------- */
-
-                    const check_in = $wrap.data('start-date');
-                    const check_out = $wrap.data('end-date');
-                    const nights = Number($wrap.data('nights') || 0);
-                    
-                    console.log( 'nights' );
-                    console.log( nights );
-                    
-                    const duration = nights;
-
-                    console.log('📅 dates:', {
-                        check_in,
-                        check_out,
-                        nights
-                    });
-
                     /* --------------------------------------------------
                        4️⃣ BUILD GUESTS STRING (OLD STYLE)
                     -------------------------------------------------- */
@@ -572,30 +662,53 @@
 
                     let guests_staying = parts.join(', ');
 
-                    console.log('🧾 guests_staying label:', guests_staying);
-
                     /* --------------------------------------------------
                        5️⃣ OPTIONAL DISCOUNT SUPPORT
                     -------------------------------------------------- */
 
-                    const discountPrice = Number($box.data('discount-price') || 0);
-                    console.log('💸 discountPrice:', discountPrice);
+                    // const discountPrice = Number($box.data('discount-price') || 0);
+                    // console.log('💸 discountPrice:', discountPrice);
+
+                    /* --------------------------------------------------
+                       5.5️⃣ READ .rb-room-data HIDDEN FIELD & PROPERTY CONTEXT
+                    -------------------------------------------------- */
+
+                    let roomData = {};
+                    try {
+                        const rawRoomData = $box.find('.rb-room-data').val();
+                        if (rawRoomData) roomData = JSON.parse(rawRoomData);
+                    } catch(e) { console.warn('Could not parse .rb-room-data', e); }
+
+                    /* --------------------------------------------------
+                       3️⃣ READ DATES & NIGHTS (SINGLE SOURCE)
+                    -------------------------------------------------- */
+
+                    const check_in = roomData.checkIn;
+                    const check_out = roomData.checkOut;
+                    const nights = roomData.nights;
+
+                    const payTerm      = roomData.roomPayTerm || {};
 
                     /* --------------------------------------------------
                        6️⃣ BUILD CART ITEM
                     -------------------------------------------------- */
 
                     const item = {
-                        hotel_type_id: hotel_tid,
-                        room_type_id: $box.data('room-type-id'),
-                        property_name: hotel_name,
-                        room_name: $box.data('room-name'),
-                        rateplan_id: $box.data('rateplan-id'),
-                        rateplan_name: $box.data('rateplan-name'),
-                        price: Number($box.data('price') || 0),
-                        price_label: $box.find('.rb-rateplan-price').text().trim(),
-                        discount_price: discountPrice,
-                        duration: duration,
+                        hotel_type_id:   roomData.propertyId,
+                        is_bedbank:      roomData.isBedbank,
+                        room_type_id:    roomData.roomTypeId,
+                        property_name:   roomData.propertyName,
+                        property_image:  roomData.propertyImage,
+                        resort_name:     roomData.resortName,
+                        room_name:       roomData.roomName,
+                        room_image:      roomData.roomImage,
+                        room_desc:       roomData.roomDescription,
+                        rateplan_id:     roomData.ratePlanId,
+                        rateplan_name:   roomData.ratePlanName,
+                        price:           roomData.priceRetail,
+                        // price_label:     $box.find('.rb-rateplan-price').text().trim(),
+                        // discount_price:  discountPrice,
+                        duration:        roomData.nights,
                         guests: {
                             adults,
                             children,
@@ -605,18 +718,24 @@
                         dates: {
                             check_in,
                             check_out,
-                            nights
+                            nights,
+                            checkinDisplay: roomData.checkinDisplay,
+                            checkoutDisplay: roomData.checkoutDisplay
+                        },
+                        payment: {
+                            isDeposit:        !!payTerm.isDeposit,
+                            depositAmount:    Number(payTerm.depositAmount    || 0),
+                            balanceDueAmount: Number(payTerm.balanceDueAmount || 0),
+                            balanceDueDate:   payTerm.balanceDueDate || '',
+                            totalAmount:      Number(payTerm.totalAmount || roomData.priceRetail || 0),
                         }
                     };
-
-                    console.log('🧾 cart item built:', item);
 
                     /* --------------------------------------------------
                        7️⃣ UPDATE CART
                     -------------------------------------------------- */
 
                     let cart = kv_booking_cart_get();
-                    console.log('🛒 cart before:', cart);
 
                     cart.items = cart.items.filter(
                         x => x.room_type_id !== item.room_type_id
@@ -624,12 +743,8 @@
 
                     cart.items.push(item);
 
-                    console.log('🛒 cart after:', cart);
-
                     kv_booking_cart_set(cart);
                     kv_booking_cart_render();
-
-                    console.log('✅ cart rendered');
 
                     /* --------------------------------------------------
                        8️⃣ UPDATE BUTTON STATES
@@ -640,8 +755,6 @@
                         .text('Select');
 
                     $btn.addClass('is-selected').text('Selected');
-
-                    console.log('🎉 select completed');
 
                     // Add mobile cart logic from rooms-section.php
                     if (isMobile()) {
@@ -761,6 +874,12 @@
                 });
         }
 
+        // proceed
+        jQuery(document).off('click.rbProceed').on('click.rbProceed', '.rb-proceed-btn', function() {
+            // redirect or open next step
+            window.location.href = '/confirm-booking/';
+        });
+
         function initRoomGallery() {
             const $gallery = $('.js-room-gallery');
             const $slides = $gallery.find('.room-slide');
@@ -779,8 +898,8 @@
                     arrows: true,
                     dots: false,
                     adaptiveHeight: true,
-                    prevArrow: '<button type="button" class="slick-prev"><img src="' + (window.kv_object?.themeUrl || themeUrl) + '/images/left_arrow.svg" alt="Previous"></button>',
-                    nextArrow: '<button type="button" class="slick-next"><img src="' + (window.kv_object?.themeUrl || themeUrl) + '/images/right_arrow.svg" alt="Next"></button>',
+                    prevArrow: '<button type="button" class="slick-prev"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/left_arrow.svg" alt="Previous"></button>',
+                    nextArrow: '<button type="button" class="slick-next"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/right_arrow.svg" alt="Next"></button>',
                     responsive: [{
                             breakpoint: 1024,
                             settings: { slidesToShow: 2 }

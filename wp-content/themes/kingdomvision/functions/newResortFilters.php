@@ -8,6 +8,12 @@ function newResortFiltersCode(){
         'taxonomy'   => 'accommodation-cat',
         'parent'     => 0,
         'hide_empty' => false,
+        'exclude'    => [13, 512],
+
+        // Order by numeric term meta
+        'meta_key'   => 'bs_resort_id',
+        'orderby'    => 'meta_value_num',
+        'order'      => 'ASC',
     ]);
 
     // Determine current resort based on URL segments
@@ -25,12 +31,13 @@ function newResortFiltersCode(){
         }
     }
 
-	  echo '<div class="search-card" id="search-card">';
+	  echo '<div class="search-card js-search-card">';
       echo '<div class="search-row">';
 
-        echo '<div class="sb-field" style="flex:1.3;">';
+        echo '<div class="sb-field location">';
+            echo '<img src="' . get_template_directory_uri() . '/images/location-icon.png" alt="Location">';
             echo '<select class="sb-select js-sb-resort" id="sb-resort" aria-label="Select resort">';
-            echo '<option value="" disabled ' . (empty($current_resort_slug) ? 'selected' : '') . '>Resort</option>';
+            echo '<option value="" ' . (empty($current_resort_slug) ? 'selected' : '') . '>Resort</option>';
             foreach ($terms as $term) {
                 $selected = ($current_resort_slug === $term->slug) ? 'selected' : '';
                 $display_name = str_ireplace(' Accommodation', '', $term->name);
@@ -41,15 +48,18 @@ function newResortFiltersCode(){
 
         echo '<div class="date-pair">';
           echo '<div class="sb-field" >';
+              echo '<img src="' . get_template_directory_uri() . '/images/calender-icon.png" alt="Check In Date">';
               echo '<input class="sb-input js-sb-checkin" type="text" placeholder="Check In" aria-label="Check-in date" autocomplete="off" />';
           echo '</div>';
           echo '<div class="sb-field" >';
+              echo '<img src="' . get_template_directory_uri() . '/images/calender-icon-1.png" alt="Check Out Date">';
               echo '<input class="sb-input js-sb-checkout" type="text" placeholder="Check Out" aria-label="Check-out date" autocomplete="off" />';
           echo '</div>';
         echo '</div>';
 
         # Guests field with popover 
         echo '<div class="sb-field sb-guests-desktop" onclick="toggleGuests(event, this)">';
+            echo '<img src="' . get_template_directory_uri() . '/images/user-icon.png" alt="people">';
             echo '<span class="sb-guests-display empty js-sb-guests-display">Guests</span>';
         echo '</div>';
 
@@ -74,7 +84,7 @@ function newResortFiltersCode(){
         // echo '</button>';
 
         echo '<button class="sb-submit" onclick="doSearch(this)">';
-          echo '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          echo '<img src="' . get_template_directory_uri() . '/images/search-icon.png" alt="Search">
           Browse Accommodation';
         echo '</button>';
 
@@ -90,7 +100,7 @@ function newResortFiltersCode(){
           echo '</div>';
         echo '</div>';
         echo '<div class="g-row">';
-          echo '<div><span class="g-label">Children</span><span class="g-sub">Ages 0–15</span></div>';
+          echo '<div><span class="g-label">Children</span><span class="g-sub">Ages 3–15</span></div>';
           echo '<div class="g-counter">';
               echo '<button class="g-btn js-btn-children-minus" disabled>−</button>';
               echo '<span class="g-val js-v-children">0</span>';

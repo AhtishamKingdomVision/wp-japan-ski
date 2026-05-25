@@ -34,7 +34,6 @@ function isMobile(){
 jQuery(function ($) {
     console.log('script loaded');
     // Get Theme Path From Function
-    var themeUrl = kingdomVision.themeUrl;
 
     function closestParent(child, className) {
         if (!child || child == document) {
@@ -49,7 +48,6 @@ jQuery(function ($) {
 
     // Child Age Work
     $(document).on('change', '#input_1_10, #input_4_10 ', function (e) {
-        console.log('change child');
         let noOfChilds = $(this).val();
         if (noOfChilds == '')
             return;
@@ -100,7 +98,7 @@ jQuery(function ($) {
 
     // Add Class on scroll
     $(window).scroll(function () {
-        if ($(document).scrollTop() > 100) {
+        if ($(document).scrollTop() >= 10) {
             $('.main-header , header.newHeader').addClass('stickyHeader');
         } else {
             $('.main-header , header.newHeader').removeClass('stickyHeader');
@@ -118,8 +116,8 @@ jQuery(function ($) {
             dots: true,
             arrows: true,
             adaptiveHeight: true,
-            prevArrow: '<button type="button" class="slick-prev"><img src="' + themeUrl + '/images/left_arrow.svg" alt="Previous"></button>',
-            nextArrow: '<button type="button" class="slick-next"><img src="' + themeUrl + '/images/right_arrow.svg" alt="Next"></button>'
+            prevArrow: '<button type="button" class="slick-prev"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/left_arrow.svg" alt="Previous"></button>',
+            nextArrow: '<button type="button" class="slick-next"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/right_arrow.svg" alt="Next"></button>'
         });
     }
 
@@ -134,8 +132,8 @@ jQuery(function ($) {
             dots: true,
             arrows: false,
             adaptiveHeight: true,
-            prevArrow: '<button type="button" class="slick-prev"><img src="' + themeUrl + '/images/left_arrow.svg" alt="Previous"></button>',
-            nextArrow: '<button type="button" class="slick-next"><img src="' + themeUrl + '/images/right_arrow.svg" alt="Next"></button>'
+            prevArrow: '<button type="button" class="slick-prev"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/left_arrow.svg" alt="Previous"></button>',
+            nextArrow: '<button type="button" class="slick-next"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/right_arrow.svg" alt="Next"></button>'
         });
     }
 
@@ -152,8 +150,8 @@ jQuery(function ($) {
             arrows: true,
             dots: false,
 
-            prevArrow: '<button type="button" class="slick-prev"><img src="' + themeUrl + '/images/left_arrow.svg" alt="Previous"></button>',
-            nextArrow: '<button type="button" class="slick-next"><img src="' + themeUrl + '/images/right_arrow.svg" alt="Next"></button>',
+            prevArrow: '<button type="button" class="slick-prev"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/left_arrow.svg" alt="Previous"></button>',
+            nextArrow: '<button type="button" class="slick-next"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/right_arrow.svg" alt="Next"></button>',
 
             responsive: [
                 {
@@ -222,8 +220,8 @@ jQuery(function ($) {
             speed: 500,
             swipeToSlide: true,
             cssEase: 'ease',
-            prevArrow: '<button type="button" class="slick-prev"><img src="' + themeUrl + '/images/left_arrow.svg" alt="Previous"></button>',
-            nextArrow: '<button type="button" class="slick-next"><img src="' + themeUrl + '/images/right_arrow.svg" alt="Next"></button>',
+            prevArrow: '<button type="button" class="slick-prev"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/left_arrow.svg" alt="Previous"></button>',
+            nextArrow: '<button type="button" class="slick-next"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/right_arrow.svg" alt="Next"></button>',
             responsive: [
                 {
                     breakpoint: 1200,
@@ -257,8 +255,8 @@ jQuery(function ($) {
             speed: 500,
             swipeToSlide: true,
             cssEase: 'ease',
-            prevArrow: '<button type="button" class="slick-prev"><img src="' + themeUrl + '/images/left_arrow.svg" alt="Previous"></button>',
-            nextArrow: '<button type="button" class="slick-next"><img src="' + themeUrl + '/images/right_arrow.svg" alt="Next"></button>',
+            prevArrow: '<button type="button" class="slick-prev"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/left_arrow.svg" alt="Previous"></button>',
+            nextArrow: '<button type="button" class="slick-next"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/right_arrow.svg" alt="Next"></button>',
             responsive: [
                 {
                     breakpoint: 1200,
@@ -291,8 +289,8 @@ jQuery(function ($) {
     //     speed: 400,
     //     swipeToSlide: true,
     //     cssEase: 'ease',
-    //     prevArrow: '<button type="button" class="slick-prev"><img src="' + themeUrl + '/images/left_arrow.svg" alt="Previous"></button>',
-    //     nextArrow: '<button type="button" class="slick-next"><img src="' + themeUrl + '/images/right_arrow.svg" alt="Next"></button>',
+    //     prevArrow: '<button type="button" class="slick-prev"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/left_arrow.svg" alt="Previous"></button>',
+    //     nextArrow: '<button type="button" class="slick-next"><img src="' + base_url + '/wp-content/themes/kingdomvision/images/right_arrow.svg" alt="Next"></button>',
     //     responsive: [
     //         {
     //             breakpoint: 1200,
@@ -565,6 +563,7 @@ jQuery(function ($) {
     if ($('.js-sb-checkin').length > 0) {
         var chk_in = $('.js-sb-checkin');
         var mindate = localStorage.getItem('mindate') ? localStorage.getItem('mindate') : kv_object.check_start_date;
+        // mindate = new Date(mindate);
         chk_in.each(function () {
             const $curr_item = $(this);
 
@@ -574,10 +573,12 @@ jQuery(function ($) {
                     large: 1,
                     largeDefault: 1,
                     preset: false,
-                    minDate: mindate,
-                    maxDate: kv_object.check_end_date,
+                    // minDate: kv_object.check_start_date,
+                    defaultDate: mindate || kv_object.check_start_date, // must be mm/dd/yyyy
+                    // minDate: mindate,
+                    // maxDate: kv_object.check_end_date,
                     format: 'd/m/Y',
-                    eventSelector: 'click',
+                    eventSelector: 'focus',
 
                     onChange: function (res) {
                         const dateStr = $curr_item.val();
@@ -620,7 +621,6 @@ jQuery(function ($) {
                         // We must re-init each checkout instance with the new minDate
                         $checkouts.each(function() {
                             const chk_out = $(this);
-                            console.log( chk_out );
                             chk_out
                                 .prop('disabled', false)
                                 .dateDropper('destroy')
@@ -630,10 +630,9 @@ jQuery(function ($) {
                                     minDate: minDate,
                                     maxDate: kv_object.check_end_date,
                                     format: 'd/m/Y',
-                                    eventSelector: 'click',
-                                    onChange: function () {
+                                    eventSelector: 'focus',
+                                    onChange: function (ck_res) {
 
-                                        console.log( 'w45rtgbvcwe' );
                                         if (kv_object.date_dropper_content) {
                                             const $picker = $('.datedropper .picker .pick-lg');
                                             if ($picker.length && !$picker.find('.kv-text').length) {
@@ -643,17 +642,20 @@ jQuery(function ($) {
                                             }
                                         }
 
-                                        const dateStrOut = chk_out.val();
-                                        // Sync all instances
-                                        $('.js-sb-checkout').each(function() {
+                                        const dateStr = ('0' + ck_res.date.d).slice(-2) + '/' + ck_res.date.m + '/' + ck_res.date.Y;
+                                        jQuery($checkouts).each(function() {
                                             const $el = $(this);
-                                            if ($el.val() !== dateStrOut) {
+                                            if ($el.val() !== dateStr) {
                                                 if ($el.hasClass('dateDropper')) {
-                                                    $el.dateDropper('set', { value: dateStrOut });
+                                                    $el.dateDropper('set', { value: dateStr });
+                                                    $el.val(dateStr).trigger('change');
                                                 }
-                                                $el.val(dateStrOut).trigger('change');
                                             }
                                         });
+
+                                        const dateStrOut = chk_out.val();
+                                        // Sync all instances
+                                        $('.js-sb-checkout').val(dateStrOut);
                                         localStorage.setItem('niseko_checkout', dateStrOut);
                                     }
                                 });
@@ -663,7 +665,7 @@ jQuery(function ($) {
                 });
 
             if (savedCheckin && savedCheckin.length > 0 ) {
-                $('.js-sb-checkin').val(savedCheckin).trigger('change');
+                $('.js-sb-checkin, #sc-check-in').val(savedCheckin).trigger('change');
             }
         });
             
@@ -684,8 +686,8 @@ jQuery(function ($) {
                     minDate: kv_object.check_start_date,
                     maxDate: kv_object.check_end_date,
                     format: 'd/m/Y',
-                    eventSelector: 'click',
-                    onChange: function () {
+                    eventSelector: 'focus',
+                    onchange: function () {
 
                         if (kv_object.date_dropper_content) {
                             const $picker = $('.datedropper .picker .pick-lg');
@@ -695,18 +697,6 @@ jQuery(function ($) {
                                 );
                             }
                         }
-
-                        const dateStrOut = $ckout_item.val();
-                        $('.js-sb-checkout').each(function() {
-                            const $el = $(this);
-                            if ($el.val() !== dateStrOut) {
-                                if ($el.hasClass('dateDropper')) {
-                                    $el.dateDropper('set', { value: dateStrOut });
-                                }
-                                $el.val(dateStrOut).trigger('change');
-                            }
-                        });
-                        localStorage.setItem('niseko_checkout', dateStrOut);
                     }
                 });
             if (savedCheckout && $('.js-sb-checkout').length) {
@@ -717,19 +707,24 @@ jQuery(function ($) {
     /*new resort function*/ 
     
     if ($('#sc-check-in').length === 1) {
+        var mindate = localStorage.getItem('mindate') ? localStorage.getItem('mindate') : kv_object.check_start_date;
+        
         $('#sc-check-in')
             .addClass('dateDropper')
             .dateDropper({
                 large: 1,
                 largeDefault: 1,
                 preset: false,
+                defaultDate: mindate,
                 minDate: kv_object.check_start_date,
                 maxDate: kv_object.check_end_date,
                 format: 'd/m/Y',
-                eventSelector: 'click',
+                eventSelector: 'focus',
 
                 onChange: function (res) {
-                    const dateStr = $(this).val();
+                    const dateStr = $('#sc-check-in').val();
+
+                    localStorage.setItem('niseko_checkin', dateStr);
                     /* Inject helper text once */
                     if (kv_object.date_dropper_content) {
                         const $picker = $('.datedropper .picker .pick-lg');
@@ -745,6 +740,7 @@ jQuery(function ($) {
                         res.date.d + '/' +
                         res.date.Y;
 
+                    localStorage.setItem('mindate', minDate);
                     /* Enforce minimum nights */
                     if (
                         kv_object.check_min_days_option === '1' &&
@@ -768,9 +764,8 @@ jQuery(function ($) {
                             minDate: minDate,
                             maxDate: kv_object.check_end_date,
                             format: 'd/m/Y',
-                            eventSelector: 'click',
-                            onchange: function () {
-
+                            eventSelector: 'focus',
+                            onchange: function ( cout_res ) {
                                 if (kv_object.date_dropper_content) {
                                     const $picker = $('.datedropper .picker .pick-lg');
                                     if ($picker.length && !$picker.find('.kv-text').length) {
@@ -779,8 +774,12 @@ jQuery(function ($) {
                                         );
                                     }
                                 }
+                        
                             }
                         });
+                        const dateStrOut = $('#sc-check-out').val();
+                        $('.js-sb-checkout').val(dateStrOut);
+                        localStorage.setItem('niseko_checkout', dateStrOut);
                 }
             });
 
@@ -800,8 +799,8 @@ jQuery(function ($) {
                 minDate: kv_object.check_start_date,
                 maxDate: kv_object.check_end_date,
                 format: 'd/m/Y',
-                eventSelector: 'click',
-                onchange: function () {
+                eventSelector: 'focus',
+                onChange: function () {
 
                     if (kv_object.date_dropper_content) {
                         const $picker = $('.datedropper .picker .pick-lg');
@@ -811,6 +810,9 @@ jQuery(function ($) {
                             );
                         }
                     }
+
+                    const dateStrOut = $('#sc-check-out').val();
+                    localStorage.setItem('niseko_checkout', dateStrOut);
                 }
             });
         if (savedCheckout && jQuery('#sc-check-out').length) {
@@ -826,11 +828,6 @@ jQuery(function ($) {
         $('.js-sb-checkout').dateDropper('hide');
     });
 
-    $(document).on('click', '#rbCartFooter .rb-proceed-btn', function (e) {
-        e.preventDefault();
-        var url = base_url + '/confirm-booking/'
-        window.open(url, '_blank');
-    });
     /** Check in Checkout script */
 
     $(document).on('click', '.rb-toggle-long-desc', function (e) {
@@ -854,7 +851,6 @@ jQuery(function ($) {
       });
 
       checkout.onEvent("success", (event) => {
-        console.log("✅ Payment success", event);
         // DO NOT trust frontend — wait for webhook
 
         let form = $('#gform_3'),
@@ -872,7 +868,6 @@ jQuery(function ($) {
             }
           },
           success: function (res) {
-            console.log( 'success', res );
           },
             error: function (xhr, exception) {
                 var msg = "";
@@ -919,7 +914,6 @@ jQuery(function ($) {
             }
           },
           success: function (res) {
-            console.log( 'success', res );
           },
             error: function (xhr, exception) {
                 var msg = "";
@@ -963,7 +957,6 @@ jQuery(function ($) {
 
         // Compare them. If current time is greater than expiry, it's dead.
         if (currentTime >= expiryTime || currentTime.getTime() > (expiryTime.getTime() - 60000)) {
-            console.log("Session expired. Clearing storage...");
             localStorage.removeItem('flywire_session');
             return null;
         }
@@ -977,10 +970,6 @@ jQuery(function ($) {
         const $form = $(`#gform_${formId}`);
         const $trigger = $('#flywire-trigger');
         // const room_type = kv_roomtype_get();
-
-        // console.log( 'roomtype' );
-        // console.log( roomtype );
-
 
         // if( room_type !== 'bedbank' ){
 
@@ -1030,7 +1019,6 @@ jQuery(function ($) {
                       },
                       success: function (res) {
                         if (res.success && res.data.id) {
-                            console.log('New session created:', res.data);
                             localStorage.setItem( 'flywire_session', JSON.stringify( res.data ) );
                             fw_session_id = res.data.id;
 
@@ -1148,13 +1136,22 @@ jQuery(function ($) {
     let heroCard = null;
     jQuery(window).on('scroll', function($) {
         if (!heroCard) {
-            heroCard = jQuery('#search-card')[1];
+            heroCard = jQuery('.js-search-card')[1];
         }
         let threshold = heroCard 
-            ? (jQuery(heroCard).offset().top + jQuery(heroCard).outerHeight() - 80) 
-            : 300;
-
+            ? (jQuery(heroCard).offset().top + jQuery(heroCard).outerHeight() - 440) 
+            : 60;
+        
         jQuery('header , .mobPopWrapper').toggleClass('showHeadarFilter', jQuery(window).scrollTop() > threshold);
+        
+        let filter_section = jQuery('section.hero-banner-with-filter'),
+            topHeader = jQuery('topHeader'),
+            filter_height = filter_section.length > 0 ? filter_section.outerHeight() : 0,
+            topHeader_height = topHeader.length > 0 ? topHeader.outerHeight() : 0,
+            scroll_top = jQuery(window).scrollTop();
+            
+        jQuery('.sticky-cta-container').toggleClass('active', scroll_top >= ( filter_height - topHeader_height ) );
+            
     });
 
 
@@ -1164,14 +1161,50 @@ jQuery(function ($) {
     })
     $('.closeMobSearch').on('click' , function(){
         $(this).parents('.mobFilterModal').removeClass('open');
-    })
+    });
     $('.mobFilterModal').on('click', function (e) {
       if ($(e.target).is('.mobFilterModal')) {
         $(this).removeClass('open');
       }
     });
 
-});
+    $('.backToResultsWrap').on('click', function (e) {
+      localStorage.setItem( 'go_to_main_listing', '1' );
+    });
+
+    let to_main_listing = localStorage.getItem('go_to_main_listing'),
+        header_height = $('header').outerHeight() || 0;
+    
+        if (to_main_listing !== null) {
+        $( 'html, body' ).animate({
+            scrollTop: ($('#accom-search-form').offset().top - header_height) 
+        }, 400);
+
+        localStorage.removeItem('go_to_main_listing');
+    }
+
+    // if( window.location.origin + window.location.pathname == base_url+'/accommodation/' ){
+    //     alert( 'inside page' );
+    //     localStorage.removeItem('sb-resort');
+    //     jQuery('#sb-resort').val('');
+    //     // Optional: trigger the change event if other scripts depend on it
+    //     jQuery('#sb-resort').trigger('change');
+    // }
+
+    $(document).on('click', '.location-modal-close', function (e) {
+        console.log( 'close button click' );
+        let parent = $(this).parents('#location-info-modal');
+        console.log( parent );
+        parent.removeClass('open');
+    });
+
+    $(document).on('click', '#open-location-info', function (e) {
+        console.log( 'open button click' );
+        let modal = $( '#location-info-modal' );
+        modal.addClass('open');
+    });
+
+});/* end jquery */
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -1214,40 +1247,46 @@ document.addEventListener('DOMContentLoaded', function () {
  
     function renderGuests() {
 
-            localStorage.setItem('sb_adults', String(g.adults));
+        localStorage.setItem('sb_adults', String(g.adults));
 
-            localStorage.setItem('sb_children', String(g.children));
+        localStorage.setItem('sb_children', String(g.children));
 
-            localStorage.setItem('sb_infants', String(g.infants));
- 
-            const totalGuests = g.adults + g.children;
-            let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
+        localStorage.setItem('sb_infants', String(g.infants));
 
-            if (g.infants > 0) {
-                label += `, ${g.infants} Infant${g.infants !== 1 ? 's' : ''}`;
-            }
+        const totalGuests = g.adults + g.children;
+        let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
 
-            el.display.textContent = label;
+        if (g.infants > 0) {
+            label += `, ${g.infants} Infant${g.infants !== 1 ? 's' : ''}`;
+        }
 
-            el.display.classList.toggle('empty', totalGuests <= 0 && g.infants <= 0);
+        jQuery('.js-sb-guests-display, .js-guests-display').each(function () {
+            jQuery(this).text(label).removeClass('empty');
+        });
 
-      if (el.adultsVal) el.adultsVal.textContent = g.adults;
+        el.display.classList.toggle('empty', totalGuests <= 0 && g.infants <= 0);
 
-      if (el.childrenVal) el.childrenVal.textContent = g.children;
+        jQuery('.js-v-adults').text(g.adults);
+        jQuery('.js-v-children').text(g.children);
+        jQuery('.js-v-infants').text(g.infants);
 
-      if (el.infantsVal) el.infantsVal.textContent = g.infants;
+        jQuery('.js-m-adults').val(g.adults);
+        jQuery('.js-m-children').val(g.children);
+        jQuery('.js-m-infants').val(g.infants);
 
-      if (el.btnAM) el.btnAM.disabled = g.adults <= 1;
+        if (el.btnAM) el.btnAM.disabled = g.adults <= 1;
 
-      if (el.btnCM) el.btnCM.disabled = g.children <= 0;
+        jQuery('.js-btn-adults-minus').prop('disabled', g.adults <= 1);
+        jQuery('.js-btn-children-minus').prop('disabled', g.children <= 0);
+        jQuery('.js-btn-infants-minus').prop('disabled', g.infants <= 0);
 
-      if (el.btnIM) el.btnIM.disabled = g.infants <= 0;
+        if (el.btnIM) el.btnIM.disabled = g.infants <= 0;
 
-      if (el.mAdults) el.mAdults.value = g.adults;
+        if (el.mAdults) el.mAdults.value = g.adults;
 
-      if (el.mChildren) el.mChildren.value = g.children;
+        if (el.mChildren) el.mChildren.value = g.children;
 
-      if (el.mInfants) el.mInfants.value = g.infants;
+        if (el.mInfants) el.mInfants.value = g.infants;
 
     }
  
@@ -1283,7 +1322,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const applyLocalAdjust = function(type, delta) {
                     if (type === 'adults') {
-                        g.adults = Math.max(1, g.adults + delta);
+                        g[type] = Math.max(
+                            type === 'adults' ? 1 : 0,
+                            (g[type] || 0) + delta
+                        );
                     } else if (type === 'children') {
                         g.children = Math.max(0, g.children + delta);
                     } else if (type === 'infants') {
@@ -1294,13 +1336,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const runAdjust = function(type, delta) {
                     if (typeof window.adj === 'function') {
-                        window.adj(type, delta);
-                        g.adults = Math.max(1, parseInt(el.adultsVal?.textContent || g.adults, 10) || g.adults);
-                        g.children = Math.max(0, parseInt(el.childrenVal?.textContent || g.children, 10) || g.children);
-                        g.infants = Math.max(0, parseInt(el.infantsVal?.textContent || g.infants, 10) || g.infants);
+
+                        // ALWAYS trust JS state, never DOM
+                        const current = {
+                            adults: g.adults,
+                            children: g.children,
+                            infants: g.infants
+                        };
+
+                        current[type] = Math.max(
+                            type === 'adults' ? 1 : 0,
+                            current[type] + delta
+                        );
+
+                        g = current;
+
                         renderGuests();
                         return;
                     }
+
                     applyLocalAdjust(type, delta);
                 };
  

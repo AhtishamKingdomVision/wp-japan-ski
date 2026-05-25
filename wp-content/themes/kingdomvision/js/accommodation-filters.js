@@ -18,7 +18,7 @@ const AccommodationFilters = (function() {
             timeout: 30000
         },
         selectors: {
-            searchForm: '#search-card',
+            searchForm: '.search-card.js-search-card',
             searchResults: '#accom-search-results',
             filterPanel: '#filter-panel',
             loadMore: '#load-more',
@@ -152,11 +152,14 @@ const AccommodationFilters = (function() {
                 checkout: $scope.find(CONFIG.selectors.checkout).val() || '',
                 resort: $scope.find(CONFIG.selectors.resort).val() || '',
                 guests: guestState.adults + guestState.children + guestState.infants,
+                adults: guestState.adults,
+                children: guestState.children,
+                infants: guestState.infants,
                 bedrooms: this.getCheckboxValues('bedrooms[]'),
                 areas: this.getCheckboxValues('area[]'),
                 accommodation_type: this.getCheckboxValues('type[]'),
                 ski_in_ski_out: jQuery('input[name="ski_in_ski_out"]:checked').val() || '',
-                onsen: jQuery('input[name="on-site"]:checked').val() || '',
+                onsen: jQuery('input[name="onsen"]:checked').val() || '',
                 booking: jQuery('input[name="booking"]:checked').val() || '',
                 discount: jQuery('input[name="discount"]:checked').val() || '',
                 sort: jQuery(CONFIG.selectors.sortBy).val() || '',
@@ -182,119 +185,199 @@ const AccommodationFilters = (function() {
     };
 
     const SearchState = {
-        getGuestCounts: function(context) {
-            const $scope = context && context.jquery ? context : context ? jQuery(context).closest('.search-card') : jQuery(CONFIG.selectors.searchForm).first();
+            getGuestCounts: function(context) {
+                const $scope =
+                    context && context.jquery
+                        ? context
+                        : context
+                            ? jQuery(context).closest('.search-card')
+                            : jQuery(CONFIG.selectors.searchForm).first();
 
-            return {
-                adults: parseInt($scope.find('.js-v-adults').first().text(), 10) || parseInt($scope.find('.js-m-adults').first().val(), 10) || 2,
-                children: parseInt($scope.find('.js-v-children').first().text(), 10) || parseInt($scope.find('.js-m-children').first().val(), 10) || 0,
-                infants: parseInt($scope.find('.js-v-infants').first().text(), 10) || parseInt($scope.find('.js-m-infants').first().val(), 10) || 0,
-            };
-        },
+                const read = (selector, isInput, fallback) => {
+                    const raw = isInput
+                        ? $scope.find(selector).first().val()
+                        : $scope.find(selector).first().text();
 
-        save: function(context, values = null) {
-            const $scope = context && context.jquery ? context : context ? jQuery(context).closest('.search-card') : jQuery(CONFIG.selectors.searchForm).first();
-            const guestState = this.getGuestCounts($scope);
-            const state = values || {};
-            const resort = state.resort !== undefined ? state.resort : ($scope.find(CONFIG.selectors.resort).val() || '');
-            const checkin = state.checkin !== undefined ? state.checkin : ($scope.find(CONFIG.selectors.checkin).val() || '');
-            const checkout = state.checkout !== undefined ? state.checkout : ($scope.find(CONFIG.selectors.checkout).val() || '');
+                    const n = parseInt(raw, 10);
+                    return isNaN(n) ? fallback : n;
+                };
 
-            if (resort) {
-                localStorage.setItem(CONFIG.storage.resort, resort);
-            } else {
-                localStorage.removeItem(CONFIG.storage.resort);
-            }
+                return {
+                    adults: read('.js-v-adults', false, 2),
+                    children: read('.js-v-children', false, 0),
+                    infants: read('.js-v-infants', false, 0),
+                };
+            },
 
-            if (checkin) {
-                localStorage.setItem(CONFIG.storage.checkin, checkin);
-            }
+            save: function(context, values = null) {
 
-            if (checkout) {
-                localStorage.setItem(CONFIG.storage.checkout, checkout);
-            }
+                const $scope = context && context.jquery
+                    ? context
+                    : context
+                        ? jQuery(context).closest('.search-card')
+                        : jQuery(CONFIG.selectors.searchForm).first();
 
-            localStorage.setItem(CONFIG.storage.adults, String(guestState.adults));
-            localStorage.setItem(CONFIG.storage.children, String(guestState.children));
-            localStorage.setItem(CONFIG.storage.infants, String(guestState.infants));
-        },
+                // IMPORTANT: use passed values first, fallback to DOM only if missing
+                const guestState = values || this.getGuestCounts($scope);
+                const state = values || {};
+                const resort = state.resort !== undefined ? state.resort : ($scope.find(CONFIG.selectors.resort).val() || '');
+                const checkin = state.checkin !== undefined ? state.checkin : ($scope.find(CONFIG.selectors.checkin).val() || '');
+                const checkout = state.checkout !== undefined ? state.checkout : ($scope.find(CONFIG.selectors.checkout).val() || '');
 
-        restore: function() {
-            const resort = localStorage.getItem(CONFIG.storage.resort);
-            const checkin = localStorage.getItem(CONFIG.storage.checkin);
-            const checkout = localStorage.getItem(CONFIG.storage.checkout);
-            const adults = parseInt(localStorage.getItem(CONFIG.storage.adults), 10);
-            const children = parseInt(localStorage.getItem(CONFIG.storage.children), 10);
-            const infants = parseInt(localStorage.getItem(CONFIG.storage.infants), 10);
+                if (resort) {
+                    // localStorage.setItem(CONFIG.storage.resort, resort);
+                } else {
+                    localStorage.removeItem(CONFIG.storage.resort);
+                }
 
-            if (resort) {
-                jQuery(CONFIG.selectors.resort).each(function() {
-                    if (!jQuery(this).val()) {
-                        jQuery(this).val(resort);
-                    }
+                if (checkin) {
+                    localStorage.setItem(CONFIG.storage.checkin, checkin);
+                }
+
+                if (checkout) {
+                    localStorage.setItem(CONFIG.storage.checkout, checkout);
+                }
+
+                localStorage.setItem(CONFIG.storage.adults, String(parseInt(guestState.adults, 10) || 2));
+                localStorage.setItem(CONFIG.storage.children, String(parseInt(guestState.children, 10) || 0));
+
+                localStorage.setItem(CONFIG.storage.infants, String(parseInt(guestState.infants, 10) || 0));
+            },
+
+            restore: function() {
+                const resort = localStorage.getItem(CONFIG.storage.resort);
+                const checkin = localStorage.getItem(CONFIG.storage.checkin);
+                const checkout = localStorage.getItem(CONFIG.storage.checkout);
+                const adults = parseInt(localStorage.getItem(CONFIG.storage.adults), 10);
+                const children = parseInt(localStorage.getItem(CONFIG.storage.children), 10);
+                const infants = parseInt(localStorage.getItem(CONFIG.storage.infants), 10);
+
+                if (resort) {
+                    jQuery(CONFIG.selectors.resort).each(function() {
+                        if (!jQuery(this).val()) {
+                            jQuery(this).val(resort);
+                        }
+                    });
+                }
+
+                if (checkin) {
+                    jQuery(CONFIG.selectors.checkin).each(function() {
+                        if (!jQuery(this).val()) {
+                            jQuery(this).val(checkin);
+                        }
+                    });
+                }
+
+                if (checkout) {
+                    jQuery(CONFIG.selectors.checkout).each(function() {
+                        if (!jQuery(this).val()) {
+                            jQuery(this).val(checkout).prop('disabled', false);
+                        }
+                    });
+                }
+
+                if (Number.isFinite(adults)) {
+                    this.applyGuests({
+                        adults: adults,
+                        children: Number.isFinite(children) && children >= 0 ? children : 0,
+                        infants: Number.isFinite(infants) && infants >= 0 ? infants : 0,
+                    });
+                }
+            },
+
+            applyGuests: function(guestState) {
+
+                const adultsRaw = parseInt(guestState.adults, 10);
+                const childrenRaw = parseInt(guestState.children, 10);
+                const infantsRaw = parseInt(guestState.infants, 10);
+
+                const adults = isNaN(adultsRaw) ? 2 : Math.max(1, adultsRaw);
+                const children = isNaN(childrenRaw) ? 0 : Math.max(0, childrenRaw);
+                const infants = isNaN(infantsRaw) ? 0 : Math.max(0, infantsRaw);
+
+                const totalGuests = adults + children;
+
+                let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
+
+                if (infants > 0) {
+                    label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
+                }
+
+                const $scopes = jQuery(document).find(CONFIG.selectors.searchForm);
+
+                $scopes.each(function (i) {
+                    const $scope = jQuery(this);
+                    if (!$scope.length) return;
+
+                    $scope.find('.js-v-adults').text(adults);
+                    $scope.find('.js-v-children').text(children);
+                    $scope.find('.js-v-infants').text(infants);
+
+                    $scope.find('.js-m-adults').val(adults);
+                    $scope.find('.js-m-children').val(children);
+                    $scope.find('.js-m-infants').val(infants);
+
+                    $scope.find('.js-btn-adults-minus').prop('disabled', adults <= 1);
+                    $scope.find('.js-btn-children-minus').prop('disabled', children <= 0);
+                    $scope.find('.js-btn-infants-minus').prop('disabled', infants <= 0);
+
+                    $scope.find(CONFIG.selectors.guestsDisplay)
+                        .text(label)
+                        .removeClass('empty');
                 });
+            },
+
+            clear: function() {
+                [
+                    CONFIG.storage.checkin,
+                    CONFIG.storage.checkout,
+                    CONFIG.storage.resort,
+                    CONFIG.storage.adults,
+                    CONFIG.storage.children,
+                    CONFIG.storage.infants,
+                ].forEach((key) => localStorage.removeItem(key));
             }
-
-            if (checkin) {
-                jQuery(CONFIG.selectors.checkin).each(function() {
-                    if (!jQuery(this).val()) {
-                        jQuery(this).val(checkin);
-                    }
-                });
-            }
-
-            if (checkout) {
-                jQuery(CONFIG.selectors.checkout).each(function() {
-                    if (!jQuery(this).val()) {
-                        jQuery(this).val(checkout).prop('disabled', false);
-                    }
-                });
-            }
-
-            if (Number.isFinite(adults) && adults > 0) {
-                this.applyGuests({
-                    adults: adults,
-                    children: Number.isFinite(children) && children >= 0 ? children : 0,
-                    infants: Number.isFinite(infants) && infants >= 0 ? infants : 0,
-                });
-            }
-        },
-
-        applyGuests: function(guestState) {
-            const adults = Math.max(1, parseInt(guestState.adults, 10) || 2);
-            const children = Math.max(0, parseInt(guestState.children, 10) || 0);
-            const infants = Math.max(0, parseInt(guestState.infants, 10) || 0);
-            const totalGuests = adults + children;
-            let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
-
-            if (infants > 0) {
-                label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
-            }
-
-            jQuery('.js-v-adults').text(adults);
-            jQuery('.js-v-children').text(children);
-            jQuery('.js-v-infants').text(infants);
-            jQuery('.js-m-adults').val(adults);
-            jQuery('.js-m-children').val(children);
-            jQuery('.js-m-infants').val(infants);
-            jQuery('.js-btn-adults-minus').prop('disabled', adults <= 1);
-            jQuery('.js-btn-children-minus').prop('disabled', children <= 0);
-            jQuery('.js-btn-infants-minus').prop('disabled', infants <= 0);
-            jQuery(CONFIG.selectors.guestsDisplay).text(label).toggleClass('empty', false);
-        },
-
-        clear: function() {
-            [
-                CONFIG.storage.checkin,
-                CONFIG.storage.checkout,
-                CONFIG.storage.resort,
-                CONFIG.storage.adults,
-                CONFIG.storage.children,
-                CONFIG.storage.infants,
-            ].forEach((key) => localStorage.removeItem(key));
-        }
     };
 
+    window.syncGuestUI = function (state) {
+
+        const adults = state.adults ?? 2;
+        const children = state.children ?? 0;
+        const infants = state.infants ?? 0;
+
+        const total = adults + children;
+
+        let label = `${total} Guest${total !== 1 ? 's' : ''}`;
+        if (infants > 0) {
+            label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
+        }
+
+        // ✅ sync ALL instances (this is the key fix)
+        jQuery(CONFIG.selectors.searchForm).each(function () {
+            const $card = jQuery(this);
+            if (!$card.length) return;
+
+            // counters
+            $card.find('.js-v-adults').text(adults);
+            $card.find('.js-v-children').text(children);
+            $card.find('.js-v-infants').text(infants);
+
+            // inputs
+            $card.find('.js-m-adults').val(adults);
+            $card.find('.js-m-children').val(children);
+            $card.find('.js-m-infants').val(infants);
+
+            // label
+            $card.find('.js-sb-guests-display')
+                .text(label)
+                .removeClass('empty');
+
+            // buttons
+            $card.find('.js-btn-adults-minus').prop('disabled', adults <= 1);
+            $card.find('.js-btn-children-minus').prop('disabled', children <= 0);
+            $card.find('.js-btn-infants-minus').prop('disabled', infants <= 0);
+        });
+    };
     // ============================================================================
     // AJAX SEARCH - With error handling and timeout
     // ============================================================================
@@ -315,7 +398,7 @@ const AccommodationFilters = (function() {
 
             // Save dates
             FilterData.saveDatesTolocalStorage(filterData.checkin, filterData.checkout);
-
+            
             // Show loader
             if (!append) {
                 UI.resetCounts();
@@ -342,6 +425,7 @@ const AccommodationFilters = (function() {
                     if (!append) {
                         UI.showLoader();
                     }
+                    jQuery( '.sb-submit img' ).attr('src', base_url+'/wp-content/themes/kingdomvision/images/loader-circle.gif');
                 },
                 success: function(res) {
                     if (res.success && res.data) {
@@ -371,6 +455,8 @@ const AccommodationFilters = (function() {
                 complete: function() {
                     State.isSearching = false;
                     UI.hideLoader();
+                    jQuery( '.sb-submit img' ).attr('src', base_url+'/wp-content/themes/kingdomvision/images/search-icon.png');
+                    
                 }
             });
         },
@@ -659,8 +745,11 @@ const AccommodationFilters = (function() {
                 if( jQuery( this ).val() === '' ){
                     clear_loc.hide();
                 }
+                else{
+                    clear_loc.show();
+                }
 
-                $.ajax({
+                jQuery.ajax({
                     url: ajax_url,
                     method: "POST",
                     data: {
@@ -703,6 +792,21 @@ const AccommodationFilters = (function() {
                 });
             });
 
+            
+            jQuery('.filter-tab.reset').on('click', function() {
+                localStorage.setItem( 'apply-filters', false );
+                jQuery('.filter-tabs .close_filter').each( function ( i,e ){
+                    jQuery(this).trigger('click');
+                } );
+                var parent = jQuery( this ).parent('.filter');
+                parent.hide();
+                localStorage.setItem( 'apply-filters', true );
+                localStorage.removeItem( 'niseko_checkin' );
+                localStorage.removeItem( 'niseko_checkout' );
+                jQuery('#sc-check-in, #sc-check-out').val('');
+                jQuery('#apply-filters').trigger('click');
+            });
+
             // Handle selection from autocomplete results
             jQuery(document).on('click', '.properties .property', function(e) {
                 let tid = jQuery(this).data('property-id') ?? 0,
@@ -741,7 +845,7 @@ const AccommodationFilters = (function() {
             if (infants > 0) {
                 label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
             }
-            
+
             const $displays = jQuery(CONFIG.selectors.guestsDisplay);
 
             $displays.text(label);
@@ -749,8 +853,10 @@ const AccommodationFilters = (function() {
         },
 
         onFormSubmit: function(e) {
+            console.log( 'onFormSubmit' );
             e.preventDefault();
             localStorage.setItem(CONFIG.storage.hotelSearch, 'true');
+            
             Search.run(1, false);
         },
 
@@ -825,6 +931,7 @@ const AccommodationFilters = (function() {
 
             if (apply === 'true' || apply === true) {
                 // Search.run(1, false);
+                $('#apply-filters').trigger('click');
             }
         },
 
@@ -848,10 +955,15 @@ const AccommodationFilters = (function() {
 
         onFilterInputChange: function(e) {
             const $input = jQuery(e.target);
-            const type = $input.data('type');
+            let type = $input.data('type'); // Get data-type first
             const value = $input.val();
             const label = $input.siblings('label').text().trim();
             const isRadio = $input.attr('type') === 'radio';
+            
+            // If it's a radio button and data-type is not explicitly set, use the name attribute as the type
+            if (isRadio && !type) {
+                type = $input.attr('name');
+            }
             
             let finalType = type;
             let finalLabel = label;
@@ -893,11 +1005,25 @@ const AccommodationFilters = (function() {
     // DATE PICKER - Wrapper for dateDropper plugin
     // ============================================================================
     const DatePicker = {
+        localeEn: {
+            days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            daysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+            months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            today: 'Today',
+            clear: 'Clear',
+            dateFormat: 'dd/MM/yyyy',
+            timeFormat: 'hh:mm aa',
+            firstDay: 0
+        },
+
         init: function() {
-            if (typeof jQuery.fn.dateDropper !== 'function') {
-                console.warn('dateDropper plugin not loaded');
+            if (typeof AirDatepicker === 'undefined') {
+                console.warn('AirDatepicker library not loaded');
                 return;
             }
+            if (typeof jQuery.fn.dateDropper !== 'function') return;
 
             if (typeof kv_object === 'undefined') {
                 console.warn('kv_object not available for DatePicker');
@@ -925,136 +1051,177 @@ const AccommodationFilters = (function() {
             this.initCloseOnDateClick();
         },
 
+        formatMDY: function(dateStr) {
+            if (!dateStr || !dateStr.includes('/')) return '';
+            const p = dateStr.split('/');
+            return p[1] + '/' + p[0] + '/' + p[2];
+        },
+
         initCheckIn: function() {
             const $checkin = jQuery(CONFIG.selectors.checkin);
             if (!$checkin.length) return;
 
-            var chk_in = jQuery('.js-sb-checkin');
-            var mindate = localStorage.getItem('mindate') ? localStorage.getItem('mindate') : kv_object.check_start_date;
-            
+            const savedIn = localStorage.getItem('niseko_checkin');
+            const minStart = this.parseDate(kv_object.check_start_date);
+            const maxEnd = this.parseDate(kv_object.check_end_date);
+            const initialDate = savedIn ? this.parseDate(savedIn) : minStart;
+
             $checkin.each(function() {
-                jQuery(this)
-                .addClass('dateDropper')
-                .dateDropper({
-                    large: 1,
-                    largeDefault: 1,
-                    preset: false,
-                    minDate: mindate,
-                    maxDate: kv_object.check_end_date,
-                    format: 'd/m/Y',
-                    eventSelector: 'click',
-
-                    onChange: function (res) {
-                        const dateStr = $curr_item.val();
-                        /* Inject helper text once */
-                        if (kv_object.date_dropper_content) {
-                            const $picker = jQuery('.datedropper .picker .pick-lg');
-                            if ($picker.length && !$picker.find('.kv-text').length) {
-                                $picker.prepend(
-                                    `<div class="kv-text">${kv_object.date_dropper_content}</div>`
-                                );
-                            }
-                        }
-
-                        // Sync all instances
-                        jQuery('.js-sb-checkin').val(dateStr);
-                        localStorage.setItem('niseko_checkin', dateStr);
+                new AirDatepicker(this, {
+                    locale: DatePicker.localeEn,
+                    selectedDates: [initialDate],
+                    dateFormat: 'dd/MM/yyyy',
+                    minDate: minStart,
+                    maxDate: maxEnd,
+                    autoClose: true,
+                    onSelect: function ({date, formattedDate}) {
+                        if (!date) return;
                         
-                        let minDate =
-                        res.date.m + '/' +
-                        res.date.d + '/' +
-                        res.date.Y;
-                        localStorage.setItem('mindate', minDate);
-                        /* Enforce minimum nights */
-                        if (
-                            kv_object.check_min_days_option === '1' &&
-                            kv_object.check_min_days !== ''
-                        ) {
-                            let dt = new Date(minDate);
-                            dt.setDate(dt.getDate() + parseInt(kv_object.check_min_days, 10));
-                            minDate =
-                                (dt.getMonth() + 1) + '/' +
-                                dt.getDate() + '/' +
-                                dt.getFullYear();
-                        }
+                        const actualSelectedDate = formattedDate;
+                        jQuery(this).dateDropper({
+                            large: 1,
+                            largeDefault: 1,
+                            minDate: DatePicker.formatMDY(kv_object.check_start_date),
+                            maxDate: DatePicker.formatMDY(kv_object.check_end_date),
+                            format: 'd/m/Y',
+                            onChange: function(res) {
+                                const val = ('0' + res.date.d).slice(-2) + '/' + ('0' + res.date.m).slice(-2) + '/' + res.date.Y;
+                                jQuery(CONFIG.selectors.checkin).val(val);
+                                localStorage.setItem(CONFIG.storage.checkin, val);
 
-                        /* Re-init CHECK-OUT */
-                        const $checkouts = jQuery('.js-sb-checkout');
-                        $checkouts.prop('disabled', false);
+                                // Sync all instances
+                                jQuery('.js-sb-checkin').val(actualSelectedDate);
+                                localStorage.setItem(CONFIG.storage.checkin, actualSelectedDate);
+                                let dt = new Date(res.date.Y, res.date.m - 1, res.date.d);
+                                dt.setDate(dt.getDate() + (parseInt(kv_object.check_min_days, 10) || 1));
+                                
+                                let nextMinDate = new Date(date);
+                                let minNights = parseInt(kv_object.check_min_days, 10) || 1;
+                                nextMinDate.setDate(nextMinDate.getDate() + minNights);
+                                const outMin = (dt.getMonth() + 1) + '/' + dt.getDate() + '/' + dt.getFullYear();
+                                const outVal = ('0' + dt.getDate()).slice(-2) + '/' + ('0' + (dt.getMonth() + 1)).slice(-2) + '/' + dt.getFullYear();
 
-                        // We must re-init each checkout instance with the new minDate
-                        $checkouts.each(function() {
-                            const chk_out = jQuery(this);
-                            console.log( chk_out );
-                            chk_out
-                                .prop('disabled', false)
-                                .dateDropper('destroy')
-                                .dateDropper({
+                                /* Re-init CHECK-OUT */
+                                const $checkouts = jQuery('.js-sb-checkout');
+                                $checkouts.prop('disabled', false);
+                                jQuery(CONFIG.selectors.checkout).prop('disabled', false).val(outVal).dateDropper('destroy').dateDropper({
                                     large: 1,
-                                    largeDefault: 1,
-                                    minDate: minDate,
-                                    maxDate: kv_object.check_end_date,
-                                    format: 'd/m/Y',
-                                    eventSelector: 'click',
-                                    onChange: function () {
+                                    minDate: outMin,
+                                    maxDate: DatePicker.formatMDY(kv_object.check_end_date),
+                                    format: 'd/m/Y'
+                                });
+                                localStorage.setItem(CONFIG.storage.checkout, outVal);
 
-                                        console.log( 'w45rtgbvcwe' );
-                                        if (kv_object.date_dropper_content) {
-                                            const $picker = jQuery('.datedropper .picker .pick-lg');
-                                            if ($picker.length && !$picker.find('.kv-text').length) {
-                                                $picker.prepend(
-                                                    `<div class="kv-text">${kv_object.date_dropper_content}</div>`
-                                                );
-                                            }
+                                $checkouts.each(function() {
+                                    const instance = this._airDatepicker;
+                                    if (instance) {
+                                        instance.update({
+                                            minDate: nextMinDate
+                                        });
+                                        // Automatically select checkout date, capped by maxEnd
+                                        let calculatedCheckoutDate = new Date(nextMinDate);
+                                        if (calculatedCheckoutDate > maxEnd) {
+                                            calculatedCheckoutDate = maxEnd;
                                         }
-
-                                        const dateStrOut = chk_out.val();
-                                        // Sync all instances
-                                        jQuery('.js-sb-checkout').each(function() {
-                                            const $el = jQuery(this);
-                                            if ($el.val() !== dateStrOut) {
-                                                if ($el.hasClass('dateDropper')) {
-                                                    $el.dateDropper('set', { value: dateStrOut });
-                                                }
-                                                $el.val(dateStrOut).trigger('change');
+                                        instance.clear();
+                                        instance.selectDate(calculatedCheckoutDate);
+                                    } else {
+                                        new AirDatepicker(this, {
+                                            locale: DatePicker.localeEn,
+                                            dateFormat: 'dd/MM/yyyy',
+                                            minDate: nextMinDate,
+                                            maxDate: DatePicker.parseDate(kv_object.check_end_date),
+                                            autoClose: true,
+                                            onSelect: function ({formattedDate: dateStrOut}) {
+                                                if (!dateStrOut) return;
+                                                
+                                                jQuery('.js-sb-checkout').val(dateStrOut);
+                                                localStorage.setItem('niseko_checkout', dateStrOut);
                                             }
                                         });
-                                        localStorage.setItem('niseko_checkout', dateStrOut);
                                     }
                                 });
+                            },
+                            onRenderCell: function() {
+                                if (kv_object.date_dropper_content) {
+                                    const $picker = jQuery('.air-datepicker');
+                                    if ($picker.length && !$picker.find('.kv-text').length) {
+                                        $picker.prepend(
+                                            `<div class="kv-text" style="padding: 10px; font-size: 12px; background: #f9f9f9; text-align: center;">${kv_object.date_dropper_content}</div>`
+                                        );
+                                    }
+                                    if ($picker.length && !$picker.find('.kv-text').length) $picker.prepend(`<div class="kv-text">${kv_object.date_dropper_content}</div>`);
+                                }
+                            }
                         });
-                        
+                    }.bind(this)
+                } )
+            } );
+            
+        },
+        initCheckOut: function() {
+            const $checkout = jQuery(CONFIG.selectors.checkout);
+            if (!$checkout.length) return;
+            
+            const savedOut = localStorage.getItem(CONFIG.storage.checkout);
+            const initialCheckout = savedOut ? this.parseDate(savedOut) : null;
+            const maxEnd = this.parseDate(kv_object.check_end_date);
+
+            // Determine initial minDate for checkout
+            let initialCheckoutMinDate = this.parseDate(kv_object.check_start_date);
+            const savedIn = localStorage.getItem(CONFIG.storage.checkin);
+            if (savedIn) {
+                let checkinDate = this.parseDate(savedIn);
+                let minNights = parseInt(kv_object.check_min_days, 10) || 1;
+                checkinDate.setDate(checkinDate.getDate() + minNights);
+                initialCheckoutMinDate = checkinDate;
+            }
+
+            $checkout.each(function() {
+                new AirDatepicker(this, {
+                    locale: DatePicker.localeEn,
+                    selectedDates: initialCheckout ? [initialCheckout] : [],
+                    dateFormat: 'dd/MM/yyyy', // Ensure this is consistent
+                    minDate: initialCheckoutMinDate, // Use the dynamically calculated minDate
+                    maxDate: DatePicker.parseDate(kv_object.check_end_date),
+                    autoClose: true,
+                    onSelect: function ({formattedDate}) {
+                        if (!formattedDate) return;
+                        jQuery('.js-sb-checkout').val(formattedDate);
+                        localStorage.setItem('niseko_checkout', formattedDate);
                     }
                 });
 
-                if (savedCheckin && savedCheckin.length > 0 ) {
-                    jQuery('.js-sb-checkin').val(savedCheckin).trigger('change');
+                // Initialize legacy dateDropper for this element
+                jQuery(this).dateDropper({
+                    large: 1,
+                    minDate: DatePicker.formatMDY(kv_object.check_start_date),
+                    maxDate: DatePicker.formatMDY(kv_object.check_end_date),
+                    format: 'd/m/Y',
+                    onChange: function(res) {
+                        const val = ('0' + res.date.d).slice(-2) + '/' + ('0' + res.date.m).slice(-2) + '/' + res.date.Y;
+                        jQuery(CONFIG.selectors.checkout).val(val);
+                        localStorage.setItem(CONFIG.storage.checkout, val);
+                    }
+                });
+
+                if (!jQuery(CONFIG.selectors.checkin).first().val() && !jQuery(this).val()) {
+                    jQuery(this).prop('disabled', true);
                 }
             }.bind(this));
         },
 
-        initCheckOut: function() {
-            const $checkout = jQuery(CONFIG.selectors.checkout);
-            if (!$checkout.length) return;
-
-            const hasCheckin = jQuery(CONFIG.selectors.checkin).first().val();
-
-            $checkout.each(function() {
-                const $el = jQuery(this);
-                if (!hasCheckin && !$el.val()) {
-                    $el.prop('disabled', true);
-                }
-                $el.addClass('dateDropper')
-                .dateDropper({
-                    large: 1,
-                    largeDefault: 1,
-                    minDate: kv_object.check_start_date,
-                    maxDate: kv_object.check_end_date,
-                    format: 'd-M-Y',
-                    eventSelector: 'click',
-                    onChange: this.onCheckOutChange.bind(this)
-                });
-            }.bind(this));
+        parseDate: function(dateStr) {
+            if (!dateStr) return undefined;
+            // Try DD/MM/YYYY
+            const parts = dateStr.split('/');
+            if (parts.length === 3) {
+                const d = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10) - 1;
+                const y = parseInt(parts[2], 10);
+                return new Date(y, m, d);
+            }
+            return new Date(dateStr);
         },
 
         onCheckInChange: function(res) {
@@ -1073,36 +1240,17 @@ const AccommodationFilters = (function() {
                 }
             });
 
-            // Calculate min checkout date based on min nights
-            const dt = new Date(res.date.Y, res.date.m - 1, res.date.d);
-            const minNights = parseInt(kv_object.check_min_days, 10) || 1;
-            dt.setDate(dt.getDate() + minNights);
-
-            const minDateStr = ('0' + dt.getDate()).slice(-2) + '-' + 
-                               dt.toLocaleString('en-US', { month: 'short' }) + '-' + 
-                               dt.getFullYear();
-
-            // Enable and update all Check-Out pickers with the new minDate
-            jQuery(CONFIG.selectors.checkout)
-                .prop('disabled', false)
-                .dateDropper('set', { minDate: minDateStr });
         },
 
         injectHelperText: function() {
             if (!kv_object.date_dropper_content) return;
 
-            const $picker = jQuery('.datedropper .picker .pick-lg');
+            const $picker = jQuery('.air-datepicker');
             if ($picker.length && !$picker.find('.kv-text').length) {
-                $picker.prepend(`<div class="kv-text">${kv_object.date_dropper_content}</div>`);
+                $picker.prepend(`<div class="kv-text" style="padding: 10px; background: #f0f0f0; text-align: center; font-size: 12px;">${kv_object.date_dropper_content}</div>`);
             }
         },
 
-        initCloseOnDateClick: function() {
-            jQuery(document).on('mousedown', '.pick-lg li.pick-v', () => {
-                jQuery(CONFIG.selectors.checkin).dateDropper('hide');
-                jQuery(CONFIG.selectors.checkout).dateDropper('hide');
-            });
-        }
     };
 
     // ============================================================================
@@ -1124,6 +1272,13 @@ const AccommodationFilters = (function() {
             if (State.cache.$form.length) {
                 Events.init();
             }
+
+            jQuery(document).on('click', '.sb-submit', function() {
+                var header_height = jQuery('header').outerHeight() || 0;
+                jQuery( 'html, body' ).animate({
+                    scrollTop: (jQuery('#accom-search-form').offset().top - header_height) 
+                }, 400);
+            });
 
             SearchState.restore();
 
@@ -1151,86 +1306,50 @@ const AccommodationFilters = (function() {
             window.toggleGuests = (e, el) => {
                 e.stopPropagation();
                 const $card = jQuery(el).closest('.search-card');
-                $card.find('.guests-popover').toggleClass('open');
+                jQuery('.datedropper').removeClass(' picker-focused');
+                $card.find('.guests-popover').toggleClass('show');
                 $card.find('.sb-guests-desktop').toggleClass('active');
             };
 
-            window.adj = (type, delta, el) => {
+            window.adj = (type, delta, el, e) => {
+                if (e) {
+                    e.stopPropagation();
+                }
+
+                const $card = jQuery(el).closest('.search-card');
                 const typeClass = type.trim();
-                const isAdults = typeClass === 'adults';
-                const isChildren = typeClass === 'children';
-                const isInfants = typeClass === 'infants';
+                const selector = '.js-v-' + typeClass;
                 
-                let selector = '.js-v-' + typeClass;
-                let mobileSelector = '.js-m-' + typeClass;
-                let minusSelector = '.js-btn-' + typeClass + '-minus';
-                
-                const currentVal = parseInt(jQuery(selector).first().text()) || 0;
-                
-                let val = currentVal + delta;
+                const $counter = $card.find(selector).first();
 
-                if (isAdults && val < 1) val = 1;
-                if ((isChildren || isInfants) && val < 0) val = 0;
+                const currentVal = parseInt($counter.text().trim(), 10);
 
-                // Update UI for ALL cards globally
-                jQuery(selector).text(val);
-                jQuery(mobileSelector).val(val).trigger('change');
-                
-                // Sync minus button states globally
-                if (isAdults) {
-                    jQuery(minusSelector).prop('disabled', val <= 1);
-                } else {
-                    jQuery(minusSelector).prop('disabled', val <= 0);
+                let val = (isNaN(currentVal) ? 0 : currentVal) + parseInt(delta, 10);
+                const minVal = (typeClass === 'adults') ? 1 : 0;
+                if (val < minVal) {
+                    val = minVal; 
+                    
                 }
+                // Pass the card context so we get the counts for the correct form
+                const counts = {
+                    adults: parseInt($card.find('.js-v-adults').first().text(), 10) || 2,
+                    children: parseInt($card.find('.js-v-children').first().text(), 10) || 0,
+                    infants: parseInt($card.find('.js-v-infants').first().text(), 10) || 0
+                };
+
+                $counter.text(val);
                 
-                // Update display label directly
-                const adults = parseInt(jQuery('.js-v-adults').first().text()) || 1;
-                const children = parseInt(jQuery('.js-v-children').first().text()) || 0;
-                const infants = parseInt(jQuery('.js-v-infants').first().text()) || 0;
-                
-                const totalGuests = adults + children;
-                let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
-                
-                if (infants > 0) {
-                    label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
-                }
-                
-                jQuery(CONFIG.selectors.guestsDisplay).text(label).toggleClass('empty', false);
+                counts[typeClass] = val;
+
+                SearchState.applyGuests(counts);
                 SearchState.save();
             };
 
             window.onMobileGuestChange = (e, el) => {
                 const $target = jQuery(e.target);
-                const val = $target.val();
-                const isAdults = $target.hasClass('js-m-adults');
-                const isChildren = $target.hasClass('js-m-children');
-                const isInfants = $target.hasClass('js-m-infants');
-                
-                if (isAdults) {
-                    jQuery('.js-v-adults').text(val);
-                    jQuery('.js-btn-adults-minus').prop('disabled', val <= 1);
-                } else if (isChildren) {
-                    jQuery('.js-v-children').text(val);
-                    jQuery('.js-btn-children-minus').prop('disabled', val <= 0);
-                } else if (isInfants) {
-                    jQuery('.js-v-infants').text(val);
-                    jQuery('.js-btn-infants-minus').prop('disabled', val <= 0);
-                }
-
-                // Update display label
-                const adults = parseInt(jQuery('.js-v-adults').first().text()) || 1;
-                const children = parseInt(jQuery('.js-v-children').first().text()) || 0;
-                const infants = parseInt(jQuery('.js-v-infants').first().text()) || 0;
-                
-                const totalGuests = adults + children;
-                let label = `${totalGuests} Guest${totalGuests !== 1 ? 's' : ''}`;
-                
-                if (infants > 0) {
-                    label += `, ${infants} Infant${infants !== 1 ? 's' : ''}`;
-                }
-                
-                jQuery(CONFIG.selectors.guestsDisplay).text(label).toggleClass('empty', false);
-                SearchState.save();
+                const counts = SearchState.getGuestCounts($target);
+                SearchState.applyGuests(counts);
+                SearchState.save($card, counts);
             };
 
             window.resetFilters = (el) => {
@@ -1269,6 +1388,11 @@ const AccommodationFilters = (function() {
                 }
             };
 
+            // Close popover on focus out
+            // jQuery(".guests-popover").focusout(function() {
+            //     jQuery(this).removeClass('open');
+            // });
+
             // Close popover when clicking outside
             jQuery(document).on('click', function(e) {
                 if (!jQuery(e.target).closest('.sb-guests-desktop, .guests-popover').length) {
@@ -1293,12 +1417,13 @@ const AccommodationFilters = (function() {
             const urlContext = this.getURLContext();
             if (urlContext) {
                 const normalizedId = urlContext.replace(/-/g, '_');
-                const $targetInput = jQuery(`#${normalizedId}, #${urlContext}, input[value="${urlContext}"], input[value="${urlContext}-accommodation"]`);
+                const $targetInput = jQuery(`#${normalizedId}, #${urlContext}, input[value="${urlContext}"], input[value="${urlContext}-accommodation"], input[name="${normalizedId}"]`);
                 
-                if ($targetInput.length) {
+                if ($targetInput.length > 0) {
                     $targetInput.prop('checked', true).trigger('change');
+                    $targetInput.siblings('label').css("pointer-events", "none"); // Disable the input so user cannot remove it
                     // Lock the filter tab using its actual data-type for accuracy
-                    const type = $targetInput.data('type') || urlContext;
+                    const type = $targetInput.data('type') || $targetInput.attr('name') || urlContext;
                     Filters.lockFilterIfScoped(type);
                 }
             }
@@ -1351,6 +1476,11 @@ const AccommodationFilters = (function() {
         },
 
         search: function(page = 1, append = false) {
+            
+            var header_height = jQuery('header').outerHeight() || 0;
+            jQuery( 'html, body' ).animate({
+                scrollTop: (jQuery('#accom-search-form').offset().top - header_height) 
+            }, 400);
             return Search.run(page, append);
         },
 
@@ -1364,5 +1494,6 @@ const AccommodationFilters = (function() {
 // AUTO-INIT ON DOM READY
 // ============================================================================
 jQuery(document).ready(function($) {
+
     AccommodationFilters.init();
 });

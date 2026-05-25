@@ -12584,3 +12584,1698 @@
     [order] => ASC
 )
 <br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 24
+                            [3] => 27
+                            [4] => 29
+                            [5] => 38
+                            [6] => 39
+                            [7] => 40
+                            [8] => 46
+                            [9] => 50
+                            [10] => 53
+                            [11] => 52
+                            [12] => 48
+                            [13] => 44
+                            [14] => 42
+                            [15] => 37
+                            [16] => 36
+                            [17] => 35
+                            [18] => 33
+                            [19] => 32
+                            [20] => 30
+                            [21] => 26
+                            [22] => 25
+                            [23] => 20
+                            [24] => 19
+                            [25] => 13
+                            [26] => 12
+                            [27] => 9
+                            [28] => 8
+                            [29] => 6
+                            [30] => 5
+                            [31] => 4
+                            [32] => 2
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 24
+                            [3] => 27
+                            [4] => 29
+                            [5] => 38
+                            [6] => 39
+                            [7] => 40
+                            [8] => 46
+                            [9] => 50
+                            [10] => 53
+                            [11] => 52
+                            [12] => 48
+                            [13] => 44
+                            [14] => 42
+                            [15] => 37
+                            [16] => 36
+                            [17] => 35
+                            [18] => 33
+                            [19] => 32
+                            [20] => 30
+                            [21] => 26
+                            [22] => 25
+                            [23] => 20
+                            [24] => 19
+                            [25] => 13
+                            [26] => 12
+                            [27] => 9
+                            [28] => 8
+                            [29] => 6
+                            [30] => 5
+                            [31] => 4
+                            [32] => 2
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 42
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 42
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 42
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 42
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 42
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 42
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 42
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 42
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 48
+                            [3] => 30
+                            [4] => 26
+                            [5] => 5
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 48
+                            [3] => 30
+                            [4] => 26
+                            [5] => 5
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 48
+                            [3] => 30
+                            [4] => 26
+                            [5] => 5
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 48
+                            [3] => 30
+                            [4] => 26
+                            [5] => 5
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 48
+                            [3] => 30
+                            [4] => 26
+                            [5] => 5
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 48
+                            [3] => 30
+                            [4] => 26
+                            [5] => 5
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 47
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 15
+                            [16] => 13
+                            [17] => 12
+                            [18] => 8
+                            [19] => 5
+                            [20] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 47
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 15
+                            [16] => 13
+                            [17] => 12
+                            [18] => 8
+                            [19] => 5
+                            [20] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 47
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 15
+                            [16] => 13
+                            [17] => 12
+                            [18] => 8
+                            [19] => 5
+                            [20] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 47
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 15
+                            [16] => 13
+                            [17] => 12
+                            [18] => 8
+                            [19] => 5
+                            [20] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [fields] => ids
+    [posts_per_page] => -1
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => -1
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+    [fields] => ids
+)
+<br></pre>
+<pre>args<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
+<pre>overrides<br></pre>
+<pre>Array
+(
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 47
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+)
+<br></pre>
+<pre>txt-q<br></pre>
+<pre>Array
+(
+    [post_type] => accommodation
+    [post_status] => publish
+    [posts_per_page] => 6
+    [paged] => 1
+    [meta_query] => Array
+        (
+            [relation] => AND
+            [0] => Array
+                (
+                    [key] => property_id
+                    [value] => Array
+                        (
+                            [0] => 1
+                            [1] => 7
+                            [2] => 52
+                            [3] => 48
+                            [4] => 47
+                            [5] => 37
+                            [6] => 36
+                            [7] => 35
+                            [8] => 33
+                            [9] => 32
+                            [10] => 30
+                            [11] => 26
+                            [12] => 25
+                            [13] => 20
+                            [14] => 19
+                            [15] => 13
+                            [16] => 12
+                            [17] => 8
+                            [18] => 5
+                            [19] => 4
+                        )
+
+                    [compare] => IN
+                )
+
+        )
+
+    [orderby] => Array
+        (
+            [menu_order] => ASC
+            [title] => ASC
+        )
+
+    [order] => ASC
+)
+<br></pre>
