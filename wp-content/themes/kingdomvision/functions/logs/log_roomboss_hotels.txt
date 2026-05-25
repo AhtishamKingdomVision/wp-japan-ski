@@ -8,3 +8,7 @@
 <pre>Accommodation Starry Residence Suite synced with ID: 76609<br></pre>
 <pre>Accommodation Yuki Ki Lodge synced with ID: 76614<br></pre>
 <pre>Accommodation Echoland Apartments synced with ID: 76616<br></pre>
+<pre>Accommodation Momiji Chalets synced with ID: 76621<br></pre>
+<pre>Accommodation Mokuren Furano synced with ID: 76626<br></pre>
+<pre>Accommodation Happo Slopeside Apartments synced with ID: 76628<br></pre>
+<pre>Accommodation Starry Residence Suite synced with ID: 76609<br></pre>

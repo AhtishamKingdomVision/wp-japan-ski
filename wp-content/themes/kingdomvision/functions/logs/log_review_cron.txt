@@ -152,3 +152,74 @@
 <pre>reviews found on page: 9 -- -- -- 2026-05-15 08:25:37<br></pre>
 <pre>reviews found on page: 10 -- -- -- 2026-05-15 08:25:38<br></pre>
 <pre>No more reviews -- -- -- 2026-05-15 08:25:38<br></pre>
+<pre>No more reviews for SKU: 2 -- -- -- 2026-05-18 14:52:40<br></pre>
+<pre>No more reviews for SKU: 40 -- -- -- 2026-05-18 14:52:42<br></pre>
+<pre>No more reviews for SKU: 244 -- -- -- 2026-05-18 14:52:44<br></pre>
+<pre>No more reviews for SKU: 13 -- -- -- 2026-05-18 14:52:45<br></pre>
+<pre>No more reviews for SKU: 279 -- -- -- 2026-05-18 14:52:47<br></pre>
+<pre>No more reviews for SKU: 302 -- -- -- 2026-05-18 14:52:50<br></pre>
+<pre>No more reviews for SKU: 63 -- -- -- 2026-05-18 14:52:51<br></pre>
+<pre>No more reviews for SKU: 59 -- -- -- 2026-05-18 14:52:53<br></pre>
+<pre>No more reviews for SKU: 57 -- -- -- 2026-05-18 14:52:56<br></pre>
+<pre>No more reviews for SKU: 22 -- -- -- 2026-05-18 14:52:58<br></pre>
+<pre>No more reviews for SKU: 300 -- -- -- 2026-05-18 14:52:59<br></pre>
+<pre>No more reviews for SKU: 111 -- -- -- 2026-05-18 14:53:01<br></pre>
+<pre>No more reviews for SKU: 310 -- -- -- 2026-05-18 14:53:02<br></pre>
+<pre>No more reviews for SKU: 47 -- -- -- 2026-05-18 14:53:04<br></pre>
+<pre>No more reviews for SKU: 429 -- -- -- 2026-05-18 14:53:06<br></pre>
+<pre>No more reviews for SKU: 25 -- -- -- 2026-05-18 14:53:07<br></pre>
+<pre>No more reviews for SKU: 11 -- -- -- 2026-05-18 14:53:08<br></pre>
+<pre>No more reviews for SKU: 24 -- -- -- 2026-05-18 14:53:09<br></pre>
+<pre>No more reviews for SKU: 34 -- -- -- 2026-05-18 14:53:11<br></pre>
+<pre>No more reviews for SKU: 91 -- -- -- 2026-05-18 14:53:12<br></pre>
+<pre>No more reviews for SKU: 32 -- -- -- 2026-05-18 14:53:16<br></pre>
+<pre>No more reviews for SKU: 89 -- -- -- 2026-05-18 14:53:19<br></pre>
+<pre>No more reviews for SKU: 74 -- -- -- 2026-05-18 14:53:21<br></pre>
+<pre>No more reviews for SKU: 125 -- -- -- 2026-05-18 14:53:22<br></pre>
+<pre>No more reviews for SKU: 39 -- -- -- 2026-05-18 14:53:23<br></pre>
+<pre>No more reviews for SKU: 4 -- -- -- 2026-05-18 14:53:25<br></pre>
+<pre>No more reviews for SKU: 53 -- -- -- 2026-05-18 14:53:26<br></pre>
+<pre>No more reviews for SKU: 216 -- -- -- 2026-05-18 14:53:27<br></pre>
+<pre>No more reviews for SKU: 3 -- -- -- 2026-05-18 14:53:29<br></pre>
+<pre>No more reviews for SKU: 127 -- -- -- 2026-05-18 14:53:31<br></pre>
+<pre>No more reviews for SKU: 65 -- -- -- 2026-05-18 14:53:32<br></pre>
+<pre>No more reviews for SKU: 9 -- -- -- 2026-05-18 14:53:33<br></pre>
+<pre>No more reviews for SKU: 118 -- -- -- 2026-05-18 14:53:35<br></pre>
+<pre>No more reviews for SKU: 79 -- -- -- 2026-05-18 14:53:36<br></pre>
+<pre>No more reviews for SKU: 73 -- -- -- 2026-05-18 14:53:37<br></pre>
+<pre>No more reviews for SKU: 80 -- -- -- 2026-05-18 14:53:39<br></pre>
+<pre>No more reviews for SKU: 66 -- -- -- 2026-05-18 14:53:40<br></pre>
+<pre>No more reviews for SKU: 85 -- -- -- 2026-05-18 14:53:42<br></pre>
+<pre>No more reviews for SKU: 31 -- -- -- 2026-05-18 14:53:43<br></pre>
+<pre>No more reviews for SKU: 41 -- -- -- 2026-05-18 14:53:44<br></pre>
+<pre>No more reviews for SKU: 86 -- -- -- 2026-05-18 14:53:45<br></pre>
+<pre>No more reviews for SKU: 17 -- -- -- 2026-05-18 14:53:45<br></pre>
+<pre>No more reviews for SKU: 238 -- -- -- 2026-05-18 14:53:46<br></pre>
+<pre>No more reviews for SKU: 103 -- -- -- 2026-05-18 14:53:47<br></pre>
+<pre>No more reviews for SKU: 109 -- -- -- 2026-05-18 14:53:48<br></pre>
+<pre>No more reviews for SKU: 159 -- -- -- 2026-05-18 14:53:50<br></pre>
+<pre>No more reviews for SKU: 168 -- -- -- 2026-05-18 14:53:51<br></pre>
+<pre>No more reviews for SKU: 114 -- -- -- 2026-05-18 14:53:52<br></pre>
+<pre>No more reviews for SKU: 115 -- -- -- 2026-05-18 14:53:53<br></pre>
+<pre>No more reviews for SKU: 119 -- -- -- 2026-05-18 14:53:54<br></pre>
+<pre>No more reviews for SKU: 120 -- -- -- 2026-05-18 14:53:55<br></pre>
+<pre>No more reviews for SKU: 182 -- -- -- 2026-05-18 14:53:56<br></pre>
+<pre>No more reviews for SKU: 132 -- -- -- 2026-05-18 14:53:58<br></pre>
+<pre>No more reviews for SKU: 121 -- -- -- 2026-05-18 14:54:00<br></pre>
+<pre>No more reviews for SKU: 259 -- -- -- 2026-05-18 14:54:02<br></pre>
+<pre>No more reviews for SKU: 131 -- -- -- 2026-05-18 14:54:03<br></pre>
+<pre>reviews found on page: 1 -- -- -- 2026-05-18 14:54:23<br></pre>
+<pre>updating total and average -- -- -- 2026-05-18 14:54:23<br></pre>
+<pre>reviews found on page: 2 -- -- -- 2026-05-18 14:54:26<br></pre>
+<pre>reviews found on page: 3 -- -- -- 2026-05-18 14:54:27<br></pre>
+<pre>reviews found on page: 4 -- -- -- 2026-05-18 14:54:29<br></pre>
+<pre>reviews found on page: 5 -- -- -- 2026-05-18 14:54:30<br></pre>
+<pre>reviews found on page: 6 -- -- -- 2026-05-18 14:54:32<br></pre>
+<pre>reviews found on page: 7 -- -- -- 2026-05-18 14:54:34<br></pre>
+<pre>reviews found on page: 8 -- -- -- 2026-05-18 14:54:37<br></pre>
+<pre>reviews found on page: 9 -- -- -- 2026-05-18 14:54:39<br></pre>
+<pre>reviews found on page: 10 -- -- -- 2026-05-18 14:54:41<br></pre>
+<pre>No more reviews -- -- -- 2026-05-18 14:54:41<br></pre>
+<pre>No more reviews for SKU: 336 -- -- -- 2026-05-25 12:29:41<br></pre>
+<pre>No more reviews for SKU: 296 -- -- -- 2026-05-25 12:29:42<br></pre>
+<pre>No more reviews for SKU: 76 -- -- -- 2026-05-25 12:29:44<br></pre>

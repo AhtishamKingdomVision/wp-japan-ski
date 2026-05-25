@@ -1710,3 +1710,183 @@
 <pre><br></pre>
 <pre>rb_price<br></pre>
 <pre>607800<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>3456<br></pre>
+<pre>rb_price<br></pre>
+<pre>743130<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>301000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>3955000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>5537000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>2052000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>988400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>3420<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>2667600<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>335160<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>216600<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>3610000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>5367500<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>2747200<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>216720<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>3456<br></pre>
+<pre>rb_price<br></pre>
+<pre>336000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>60480<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>2224000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>4520000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>5787990<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>767880<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>3456<br></pre>
+<pre>rb_price<br></pre>
+<pre>1690000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>413060<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>5031000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>7458000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>5787990<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>767880<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>3456<br></pre>
+<pre>rb_price<br></pre>
+<pre>1690000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>413060<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>5031000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>7458000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>5787990<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>767880<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>3456<br></pre>
+<pre>rb_price<br></pre>
+<pre>1690000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>413060<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>5031000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>7458000<br></pre>

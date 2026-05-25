@@ -508,3 +508,67 @@
     [resortId] => 1
 )
 <br></pre>
+<pre>Array
+(
+    [start_date] => 10-Jan-2027
+    [end_date] => 17-Jan-2027
+    [duration] => 7
+    [resortId] => 1
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 08-Nov-2026
+    [end_date] => 27-Nov-2026
+    [duration] => 19
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 08-Nov-2026
+    [end_date] => 27-Nov-2026
+    [duration] => 19
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 08-Nov-2026
+    [end_date] => 12-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 01-Dec-2026
+    [end_date] => 09-Dec-2026
+    [duration] => 8
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 14-Feb-2027
+    [end_date] => 27-Feb-2027
+    [duration] => 13
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 14-Feb-2027
+    [end_date] => 27-Feb-2027
+    [duration] => 13
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 14-Feb-2027
+    [end_date] => 27-Feb-2027
+    [duration] => 13
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 14-Feb-2027
+    [end_date] => 27-Feb-2027
+    [duration] => 13
+)
+<br></pre>

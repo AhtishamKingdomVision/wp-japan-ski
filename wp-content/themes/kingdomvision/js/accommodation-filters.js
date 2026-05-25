@@ -996,7 +996,7 @@ const AccommodationFilters = (function() {
                                     maxDate: kv_object.check_end_date,
                                     format: 'd/m/Y',
                                     eventSelector: 'click',
-                                    onchange: function () {
+                                    onChange: function () {
 
                                         console.log( 'w45rtgbvcwe' );
                                         if (kv_object.date_dropper_content) {
@@ -1008,24 +1008,17 @@ const AccommodationFilters = (function() {
                                             }
                                         }
 
-                                        const dateStr = ('0' + ck_res.date.d).slice(-2) + '-' + ck_res.date.m_str + '-' + ck_res.date.Y;
-                                        console.log( 'dateStr' );
-                                        console.log( dateStr );
-                                        jQuery($checkouts).each(function() {
-                                            const $el = jQuery(this);
-                                            // console.log( 'el' );
-                                            // console.log( $el );
-                                            if ($el.val() !== dateStr) {
-                                                if ($el.hasClass('dateDropper')) {
-                                                    $el.dateDropper('set', { value: dateStr });
-                                                    $el.val(dateStr).trigger('change');
-                                                }
-                                            }
-                                        });
-
                                         const dateStrOut = chk_out.val();
                                         // Sync all instances
-                                        jQuery('.js-sb-checkout').val(dateStrOut);
+                                        jQuery('.js-sb-checkout').each(function() {
+                                            const $el = jQuery(this);
+                                            if ($el.val() !== dateStrOut) {
+                                                if ($el.hasClass('dateDropper')) {
+                                                    $el.dateDropper('set', { value: dateStrOut });
+                                                }
+                                                $el.val(dateStrOut).trigger('change');
+                                            }
+                                        });
                                         localStorage.setItem('niseko_checkout', dateStrOut);
                                     }
                                 });

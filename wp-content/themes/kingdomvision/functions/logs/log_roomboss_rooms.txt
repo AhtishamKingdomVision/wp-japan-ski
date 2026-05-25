@@ -20,3 +20,15 @@
 <pre>Room 2 Bedroom Apartment synced with ID: 76618<br></pre>
 <pre>Room 1 Bedroom Apartment synced with ID: 76619<br></pre>
 <pre>Room 3 Bedroom Apartment synced with ID: 76620<br></pre>
+<pre>Room 2 Bedroom House - Momiji Georgia synced with ID: 76622<br></pre>
+<pre>Room 2 Bedroom House - Momiji Jadey synced with ID: 76623<br></pre>
+<pre>Room 3 Bedroom House - Momiji Brooklyn synced with ID: 76624<br></pre>
+<pre>Room 3 Bedroom House - Momiji Montana synced with ID: 76625<br></pre>
+<pre>Room 3 Bedroom Chalet synced with ID: 82022<br></pre>
+<pre>Room 3 Bedroom Apartment - Apt 1 synced with ID: 76629<br></pre>
+<pre>Room 3 Bedroom Apartment - Apt 2 synced with ID: 76630<br></pre>
+<pre>Room 4 Bedroom Apartment - Apt 3 synced with ID: 76631<br></pre>
+<pre>Room 2 Bedroom Apartment - Apt 4 synced with ID: 76632<br></pre>
+<pre>Room 3 Bedroom Suite Moonmist synced with ID: 76610<br></pre>
+<pre>Room 2 Bedroom Suite Iceberg synced with ID: 76611<br></pre>
+<pre>Room 1 Bedroom Suite with Loft synced with ID: 76612<br></pre>
