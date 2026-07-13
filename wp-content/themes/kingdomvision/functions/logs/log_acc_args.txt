@@ -649,3 +649,108 @@
     [duration] => 4
 )
 <br></pre>
+<pre>Array
+(
+    [start_date] => 15-Nov-2026
+    [end_date] => 19-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 15-Nov-2026
+    [end_date] => 19-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 22-Nov-2026
+    [end_date] => 26-Nov-2026
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 15-Nov-2026
+    [end_date] => 11-Jul-2027
+    [duration] => 238
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 30-Jan-2027
+    [end_date] => 03-Feb-2027
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 22-Jan-2027
+    [end_date] => 26-Jan-2027
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 02-Jan-2027
+    [end_date] => 16-Jan-2027
+    [duration] => 14
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 02-Jan-2027
+    [end_date] => 16-Jan-2027
+    [duration] => 14
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 09-Dec-2026
+    [end_date] => 31-Dec-2026
+    [duration] => 22
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 28-Jan-2027
+    [end_date] => 01-Feb-2027
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 13-Mar-2027
+    [end_date] => 17-Mar-2027
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 13-Mar-2027
+    [end_date] => 17-Mar-2027
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 13-Mar-2027
+    [end_date] => 17-Mar-2027
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 13-Mar-2027
+    [end_date] => 17-Mar-2027
+    [duration] => 4
+)
+<br></pre>
+<pre>Array
+(
+    [start_date] => 13-Mar-2027
+    [end_date] => 17-Mar-2027
+    [duration] => 4
+)
+<br></pre>

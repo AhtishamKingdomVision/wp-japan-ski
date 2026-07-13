@@ -560,12 +560,60 @@ jQuery(function ($) {
 
     /*new resort function*/
     
+    // Helper function to parse D/M/Y date string to Date object
+    function parseDMYDate(dateStr) {
+        if (!dateStr) return null;
+        const parts = dateStr.split('/');
+        if (parts.length !== 3) return null;
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+    }
+
+    // Helper function to format Date object to D/M/Y string with zero-padding
+    function formatDMYDate(date) {
+        if (!date) return '';
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    // Helper function to get minimum checkout date based on check-in + gap
+    function getMinimumCheckoutDate(checkinDateStr, minDaysGap) {
+        const checkinDate = parseDMYDate(checkinDateStr);
+        if (!checkinDate) return '';
+        const checkoutDate = new Date(checkinDate);
+        checkoutDate.setDate(checkoutDate.getDate() + minDaysGap);
+        return formatDMYDate(checkoutDate);
+    }
+
+    // Helper function to get maximum check-in date based on checkout - gap
+    function getMaximumCheckInDate(checkoutDateStr, minDaysGap) {
+        const checkoutDate = parseDMYDate(checkoutDateStr);
+        if (!checkoutDate) return '';
+        const checkinDate = new Date(checkoutDate);
+        checkinDate.setDate(checkinDate.getDate() - minDaysGap);
+        return formatDMYDate(checkinDate);
+    }
+    
     if ($('.js-sb-checkin').length > 0) {
         var chk_in = $('.js-sb-checkin');
         var mindate = localStorage.getItem('mindate') ? localStorage.getItem('mindate') : kv_object.check_start_date;
-        // mindate = new Date(mindate);
+        const MIN_DAYS_GAP = 4; // Minimum 4-day gap between check-in and check-out
+        
         chk_in.each(function () {
             const $curr_item = $(this);
+
+            // Function to get max check-in date based on current checkout
+            const getCheckInMaxDate = function() {
+                const checkoutStr = $('.js-sb-checkout').val();
+                if (checkoutStr) {
+                    return getMaximumCheckInDate(checkoutStr, MIN_DAYS_GAP);
+                }
+                return kv_object.check_end_date;
+            };
 
             $curr_item
                 .addClass('dateDropper')
@@ -576,7 +624,7 @@ jQuery(function ($) {
                     // minDate: kv_object.check_start_date,
                     defaultDate: mindate || kv_object.check_start_date, // must be mm/dd/yyyy
                     // minDate: mindate,
-                    // maxDate: kv_object.check_end_date,
+                    maxDate: getCheckInMaxDate(),
                     format: 'd/m/Y',
                     eventSelector: 'focus',
 
@@ -595,6 +643,24 @@ jQuery(function ($) {
                         // Sync all instances
                         $('.js-sb-checkin').val(dateStr);
                         localStorage.setItem('niseko_checkin', dateStr);
+                        
+                        // Check if existing checkout maintains 4-day gap, auto-correct if needed
+                        const currentCheckout = $('.js-sb-checkout').val();
+                        if (currentCheckout) {
+                            const checkinDate = parseDMYDate(dateStr);
+                            const checkoutDate = parseDMYDate(currentCheckout);
+                            if (checkinDate && checkoutDate) {
+                                const timeDiff = checkoutDate - checkinDate;
+                                const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                                
+                                // If gap is less than MIN_DAYS_GAP, auto-update checkout
+                                if (daysDiff < MIN_DAYS_GAP) {
+                                    const correctedCheckout = getMinimumCheckoutDate(dateStr, MIN_DAYS_GAP);
+                                    $('.js-sb-checkout').val(correctedCheckout);
+                                    localStorage.setItem('niseko_checkout', correctedCheckout);
+                                }
+                            }
+                        }
                         
                         let minDate =
                         res.date.m + '/' +
@@ -674,6 +740,7 @@ jQuery(function ($) {
     if ($('.js-sb-checkout').length > 0 ) {
 
         var $checkout = $('.js-sb-checkout');
+        console.log('Initializing checkout datepicker');    
         $checkout.each(function () {
             var $ckout_item = $(this);
 
@@ -708,6 +775,16 @@ jQuery(function ($) {
     
     if ($('#sc-check-in').length === 1) {
         var mindate = localStorage.getItem('mindate') ? localStorage.getItem('mindate') : kv_object.check_start_date;
+        // const MIN_DAYS_GAP = 4; // Minimum 4-day gap between check-in and check-out
+
+        // // Function to get max check-in date based on current checkout
+        // const getCheckInMaxDateSC = function() {
+        //     const checkoutStr = $('#sc-check-out').val();
+        //     if (checkoutStr) {
+        //         return getMaximumCheckInDate(checkoutStr, MIN_DAYS_GAP);
+        //     }
+        //     return kv_object.check_end_date;
+        // };
         
         $('#sc-check-in')
             .addClass('dateDropper')
@@ -717,7 +794,7 @@ jQuery(function ($) {
                 preset: false,
                 defaultDate: mindate,
                 minDate: kv_object.check_start_date,
-                maxDate: kv_object.check_end_date,
+                // maxDate: getCheckInMaxDateSC(),
                 format: 'd/m/Y',
                 eventSelector: 'focus',
 
@@ -725,6 +802,26 @@ jQuery(function ($) {
                     const dateStr = $('#sc-check-in').val();
 
                     localStorage.setItem('niseko_checkin', dateStr);
+                    
+                    // Check if existing checkout maintains 4-day gap, auto-correct if needed
+                    // const currentCheckout = $('#sc-check-out').val();
+                    // if (currentCheckout) {
+                    //     const checkinDate = parseDMYDate(dateStr);
+                    //     const checkoutDate = parseDMYDate(currentCheckout);
+                    //     if (checkinDate && checkoutDate) {
+                    //         const timeDiff = checkoutDate - checkinDate;
+                    //         const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                            
+                    //         // If gap is less than MIN_DAYS_GAP, auto-update checkout
+                    //         if (daysDiff < MIN_DAYS_GAP) {
+                    //             const correctedCheckout = getMinimumCheckoutDate(dateStr, MIN_DAYS_GAP);
+                    //             $('#sc-check-out').val(correctedCheckout);
+                    //             $('.js-sb-checkout').val(correctedCheckout);
+                    //             localStorage.setItem('niseko_checkout', correctedCheckout);
+                    //         }
+                    //     }
+                    // }
+                    
                     /* Inject helper text once */
                     if (kv_object.date_dropper_content) {
                         const $picker = $('.datedropper .picker .pick-lg');

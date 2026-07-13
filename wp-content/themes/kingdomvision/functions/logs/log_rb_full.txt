@@ -2220,3 +2220,602 @@
 <pre><br></pre>
 <pre>rb_price<br></pre>
 <pre>694000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>720<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>561600<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>70560<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>45600<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>760000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>1130000<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>720<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>561600<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>70560<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>45600<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>760000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>1130000<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>47600<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>230400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>864000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>414000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>1060000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>512000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>457096<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>182880<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>1548000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>788000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>414000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>1060000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>512000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>1317060<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>3456<br></pre>
+<pre>rb_price<br></pre>
+<pre>2673641<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>562400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>9040000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>12882000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>5395000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>1317060<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>3456<br></pre>
+<pre>rb_price<br></pre>
+<pre>2673641<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12345<br></pre>
+<pre>rb_price<br></pre>
+<pre>562400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre>12343<br></pre>
+<pre>rb_price<br></pre>
+<pre>9040000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>12882000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>5395000<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>276480<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>864000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>414000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>1060000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>512000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>457096<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>0<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>300000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>220800<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>300000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>220800<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>300000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>220800<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>300000<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>220800<br></pre>
+<pre>inside rb<br></pre>
+<pre>db_price<br></pre>
+<pre><br></pre>
+<pre>rb_price<br></pre>
+<pre>400<br></pre>
